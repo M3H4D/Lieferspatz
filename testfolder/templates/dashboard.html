@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ user['FirstName'] }} {{ user['LastName'] }}!</h2>
+
+<p>Your profile details:</p>
+<ul>
+    <li>Phone Number: {{ user['PhoneNumber'] }}</li>
+    <li>Balance: {{ user['Balance'] }}</li>
+    <li>Status: {{ user['Status'] }}</li>
+    <li>Role: {{ user['Role'] }}</li>
+</ul>
+
+<a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+{% endblock %}
