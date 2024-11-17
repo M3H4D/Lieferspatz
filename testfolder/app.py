@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from os import path
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Change this to a secure key in production
@@ -35,8 +36,10 @@ def create_table():
     conn.commit()
     conn.close()
 
+with app.app_context():
+    if not path.exists('DBProject/instance/' + DATABASE):
+        create_table()
 
-create_table()
 
 ### **Step 2: Define Routes for Registration and Login**
 
