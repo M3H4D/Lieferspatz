@@ -225,4 +225,4 @@ def editcustomerdetails():
         return redirect(url_for('customer.customer_dashboard'))
     return render_template('editcustomerdetails.html', user=session['customer'])
 
-# Ensure That Shopping Cart Refuses Customer Choosing Another Rest, Flash Too.
+
