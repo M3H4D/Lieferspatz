@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Restaurant Dashboard</title>
+{% endblock%}
+
+{% block content %}
+    <h1>Welcome, {{ user['Name'] }}!</h1>
+    <p>Address: {{ user['Address'] }}</p>
+    <p>Description: {{ user['Description'] }}</p>
+
+    {% if user.ImageURL %}
+        <img src="{{ url_for( 'static', filename=user.ImageURL.split('static/')[1]) }}" alt="Restaurant Image" class="img-fluid">
+    {% endif %}
+
+    <!-- Shows All items of customer-->
+    <table border="2">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item[1] }}</td>
+                <td>€ {{ item[2] }}</td>
+                <td>{{ item[3] }}</td>
+                <td>{{ item[4] }}</td>
+                <!-- Click to edit item and go to (edit item screen)-->
+                <td><form action="/restaurant/edit_item_screen" method="POST" style="margin: 0;">
+                    <button type="submit" name="ItemID" value="{{item[0]}}"> Edit </button>
+                </form></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
