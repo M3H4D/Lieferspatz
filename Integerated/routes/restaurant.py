@@ -41,6 +41,9 @@ def register_restaurant():
             os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
             image.save(image_path)
 
+            # Normalize the path to use forward slashes
+            image_path = image_path.replace(os.path.sep, '/')
+
         relative_image_path = image_path if image_path else None
         
         # Insert new restaurant into the database only if the username is unique - USE cursor here instead of conn

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome, {{ user['FirstName'] }}!</h1>
+    <p>Address: {{ user['Address'] }}</p>
+    <p>Balance: €{{ user['Balance'] }}</p>
+    <br>
+    <h2>Send Request to Restaurant</h2>
+    <input type="text" id="restaurant_id" placeholder="Enter Restaurant ID">
+    <input type="text" id="request_details" placeholder="Enter your request">
+    <button onclick="sendRequest()">Send</button>
+    <script>
+        const user = {{ user | tojson }};
+    </script>
+    <script src="/static/js/customer.js"></script>
+{% endblock %}

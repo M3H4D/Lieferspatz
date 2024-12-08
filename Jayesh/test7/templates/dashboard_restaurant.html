@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome, {{ user['Name'] }}!</h1>
+    <p>Address: {{ user['Address'] }}</p>
+    <p>Description: {{ user['Description'] }}</p>
+
+    <h2>Waiting for Customer Requests...</h2>
+    <script>
+        const user = {{ user | tojson }};
+    </script>
+    
+    <script src="/static/js/restaurant.js"></script>
+
+    {% if user.ImageURL %}
+        <img src="{{ url_for( 'static', filename=user.ImageURL.split('static/')[1]) }}" alt="Restaurant Image" class="img-fluid">
+    {% endif %}
+{% endblock %}
