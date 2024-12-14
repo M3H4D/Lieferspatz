@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<div style="display:block; width:100%"> 
+    <h2 style="line-height: 1.5;"><b>{{ restaurantchosen['Name'] }}</b></h2>
+    <div style="width:62%; float:left;">
+        <table style="width:100%;border-collapse: separate;border-spacing: 0 10px;">
+            <!-- Restaurant Item Column-->
+            {% for itemlisting in itemschosen %}
+                <div>
+                    <form method="POST" action="{{ url_for('customer.addtocart') }}"> 
+                    <tr style="background-color:#bbb;" class="FoodNum {{ itemlisting[0] }}"> 
+                        <td style="width:20%">
+                            <img src= "{{ url_for('static', filename=itemlisting['ImageURL'] ) }}" alt="Food Item: {{ itemlisting['Name'] }}" style="width:200px;height:120px;" />
+                        </td>
+                        <td style="display:flex; flex-direction: column; width:80%; justify-content: space-between; margin-top: 8px;">
+                                <p style="line-height:1; text-align:left">{{ itemlisting[2] }}</p>
+                                <p style="line-height:1; text-align:left">{{ itemlisting[4] }}</p>
+                                <div class="add-to-cart" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                    <input type="text" name="productquantity" value="1" size="2" />
+                                    <input type="hidden" id="chosenItemID"  name="chosenItemID" value="{{ itemlisting['ItemID'] }}" />
+                                    <input type="submit" value="Add To Cart" class="default-btn" />
+                                    <p style="text-align:right;">{{ itemlisting[3] }} €</p>
+                                </div>
+                        </td>
+                    </tr>
+                    </form>
+                </div>
+            {% endfor %}
+        </table>
+    </div>
+    <div style="width:38%; float:right;">
+        <h4 style="text-align: center"> Cart </h4>
+        <div class="col-sm-12">
+            <form method="POST"> 
+            <p><a id="btnEmpty" style="text-align: right; float: right;" href="{{ url_for('customer.empty_cart') }}" class="btn btn-danger">Empty Cart</a></p>
+            </form>
+            {% if 'shoppingcart' in session %}
+                {% for key, val in session['shoppingcart'].items() %}
+                    {% set Quantity = session['shoppingcart'][key]['Quantity'] %}
+                    {% set Name = session['shoppingcart'][key]['Name'] %}
+                    {% set Price = session['shoppingcart'][key]['Price'] %}
+                    <form method="POST" action="{{ url_for('customer.deleteproduct') }}"> 
+                    <table class="table table-hover" style="table-layout: fixed;">
+                        <tr style="justify-content: space-between;">
+                            <td>
+                            <p style="text-align: left;">{{ Name }}</p>
+                            <p style="text-align: right;">{{ Quantity }}  x  {{ Price }} €</p>
+                            </td>
+                        </tr>
+                        <tr style="text-align: right;">
+                            <td>
+                                <input type="hidden" id="deleteItemID"  name="deleteItemID" value="{{ session['shoppingcart'][key]['ItemToAdd'] }}" />    
+                                <input type="submit" value="Remove Item" class="btn btn-warning" />
+                            </td>
+                        </tr>
+                    </table>
+                    </form>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <br>
+        {% if 'shoppingcart' in session %}
+        <form method="POST"> 
+            <p><a id="btnEmpty" style="float: right;" href="{{ url_for('customer.paymentconfirm') }}" class="btn btn-success">Proceed To Payment</a></p>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
