@@ -67,15 +67,35 @@ def create_tables():
         )
     ''')
 
+    # Create Orders Table
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS Orders (
+            OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
+            RestaurantID INTEGER,
+            CustomerID INTEGER,
+            TotalPrice INTEGER,
+            Notes VARCHAR(100),
+            Status VARCHAR(20),
+            CreatedAt DATETIME,
+            RestaurantMoney REAL,
+            LieferMoney REAL,
+            FOREIGN KEY (RestaurantID) REFERENCES restaurants(RestaurantID),
+            FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)
+        )                
+    ''')
+
     # Create OrderItems Table
     conn.execute('''
-            CREATE TABLE IF NOT EXISTS OrderItems (
-                OrderID INTEGER,
-                ItemID INTEGER FORIEGN KEY,
-                Quantity INTEGER,
-                Price REAL
-            )
-        ''')
+        CREATE TABLE IF NOT EXISTS OrderItems (
+            OrderItemsID INTEGER PRIMARY KEY AUTOINCREMENT,
+            OrderID INTEGER,
+            ItemID INTEGER,
+            Quantity INTEGER,
+            Price DECIMAL(100,2),
+            FOREIGN KEY (ItemID) REFERENCES Items(ItemID),
+            FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+        )
+    ''')
 
 
     conn.commit()
