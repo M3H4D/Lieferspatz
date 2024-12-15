@@ -5,8 +5,6 @@ from datetime import datetime
 import sqlite3
 
 customer_bp = Blueprint('customer', __name__)
-global FlagPurchase
-FlagPurchase = False
 
 def array_merge( first_array, second_array ):
     if isinstance(first_array, list) and isinstance(second_array, list): # Joining ORDERED Lists
@@ -51,10 +49,12 @@ def register_customer():
 
 @customer_bp.route('/customer/dashboard')
 def customer_dashboard():
-    # Check if customer data exists in session
     if 'customer' not in session:
         return redirect(url_for('auth.login'))
-    # Get user details (if needed)
+    # Force Customer To Empty Cart Instead of Clicking To Dashboard.
+    if 'shoppingcart' in session:
+        flash('You May Only Choose One Restaurant To Order From, Empty Shopping Cart First.', 'danger')
+        return redirect(url_for('customer.itemorder'))
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -81,7 +81,7 @@ def itemorder():
         trueitemschosen = cursor.fetchall()
         return render_template('itemorder.html', user=customer_data, itemschosen=trueitemschosen, restaurantchosen=truerestaurantchosen)
 
-    if request.method == 'POST': # Did Not Add In Cart Anything Yet, Use Global Var FlagPurchase Later...
+    if request.method == 'POST': # Did Not Add In Cart Anything Yet
         customer_data = session['customer']
         user_id = customer_data['CustomerID']
         conn = get_db_connection()
@@ -106,7 +106,6 @@ def addtocart():
         # Insert (OR REPLACE) Into OrderItems Table New Food, With Amount, Refresh Again Upon Changing -/+.
         quantity = int(request.form['productquantity'])
         itemtoadd = int(request.form['chosenItemID'])
-        FlagPurchase = True
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM Items WHERE ItemID = ?', (itemtoadd,))
@@ -152,7 +151,6 @@ def empty_cart():
         session.pop('shoppingcart')
         session['total_price'] = 0
         session['total_quantity'] = 0
-    FlagPurchase = False
     return redirect(url_for('customer.itemorder'))
 
 @customer_bp.route('/customer/deleteproduct', methods=['GET', 'POST'])
@@ -194,8 +192,46 @@ def paymentconfirm():
     restaurantchosen = cursor.fetchone()
     conn.close()
     if request.method == 'POST':
-        pass
-        # Session Items Go To Table From The 'Pay Now' Button In The End, For Another Function Later On.
+        # Check Balance First.
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT Balance FROM customers WHERE CustomerID = ?', (customer_data['CustomerID'],))
+        balance = cursor.fetchone() # Care, This is Of Type Sqlite3.Row, Even if cursor.fetchONE()!
+        if balance[0] < session['total_price']:
+            flash("Insufficient Balance Amount.", 'danger')
+            session.pop('shoppingcart')
+            session['total_price'] = 0
+            session['total_quantity'] = 0
+            return(redirect(url_for('customer.customer_dashboard')))
+        NotesToAdd = request.form['notestoadd']
+        # Balance Sufficient, Proceed With Payment.
+        # Check If Order Table Has Entries, To Setup 'OrderID'.
+        cursor.execute('SELECT OrderID FROM OrderItems WHERE OrderID = (SELECT MAX(OrderID) FROM OrderItems)')
+        OrderID = cursor.fetchone()
+        if OrderID == None:
+            OrderIDCount = 1
+        else:
+            OrderIDCount = OrderID[0] + 1
+        for key, value in session['shoppingcart'].items():
+            itemID = session['shoppingcart'][key]['ItemToAdd'] # Or = "key"
+            quantity = session['shoppingcart'][key]['Quantity']
+            priceofitem = session['shoppingcart'][key]['Price']
+            cursor.execute(''' INSERT INTO OrderItems(OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?) ''', (OrderIDCount, itemID, quantity, priceofitem,))
+        newbalance = balance[0] - session['total_price']
+        cursor.execute('UPDATE customers SET Balance=? WHERE CustomerID = ?', (newbalance, customer_data['CustomerID'],))
+        conn.commit()
+        cursor.execute(''' INSERT INTO Orders(RestaurantID, CustomerID, TotalPrice, Notes, Status, CreatedAt, RestaurantMoney, LieferMoney) VALUES (?, ?, ?, ?, ?, ?, ?, ?) '''
+            , (session['chosenrestID'], customer_data['CustomerID'], session['total_price'], NotesToAdd
+            , 'InProcess', datetime.now(), session['total_price']*0.85, session['total_price']*0.15,))
+        conn.commit()
+        conn.close()
+        session['customer']['Balance'] = newbalance  # Update The Customer Placed In Session Already.
+        session.pop('shoppingcart')
+        session['total_price'] = 0
+        session['total_quantity'] = 0
+        flash("Purchase Successful.", 'success')
+        print(session) # For Debugging.
+        return(redirect(url_for('customer.customer_dashboard')))
     return render_template('paymentconfirm.html', customer=customer_data, restaurantchosen=restaurantchosen)
 
 @customer_bp.route('/customer/editcustomerdetails', methods=['GET', 'POST'])
@@ -225,4 +261,4 @@ def editcustomerdetails():
         return redirect(url_for('customer.customer_dashboard'))
     return render_template('editcustomerdetails.html', user=session['customer'])
 
-
+# Ensure That Shopping Cart Refuses Customer Choosing Another Rest, Flash Too.
