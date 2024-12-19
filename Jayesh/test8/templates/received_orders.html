@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Received Orders</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Received Orders</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Items</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order['OrderID'] }}</td>
+                <td>{{ order['CustomerName'] }}</td>
+                <td>
+                    <ul>
+                        {% for item in order['Items'] %}
+                        <li>{{ item['Name'] }} (x{{ item['Quantity'] }})</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>€ {{ order['TotalPrice'] }}</td>
+                <td>{{ order['Status'] }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
+                        <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
+                        <button type="submit" name="status" value="Declined" class="btn btn-danger">Decline</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
