@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Edit Item</title>
+{% endblock%}
+
+{% block content %}
+<form action="/restaurant/edit_item" method="POST" style="margin: 0;" enctype="multipart/form-data">
+    <label for="Name">Name</label>
+    <input type="text" name="Name" value="{{item[0][1]}}" required><br>
+
+    <label for="Price">Price:</label>
+    <input type="text" name="Price" value="{{item[0][2]}}" required><br>
+
+    <label for="Description">Description:</label>
+    <input type="text" name="Description" value="{{item[0][3]}}"required><br>
+
+    <label for="image_url">Image:</label>
+    <input type="file" name="image_url" accept="image/*" value="{{item[0][4]}}" ><br>
+
+    <button type="submit" name="ItemID" value="{{item[0][0]}}">Finalize Item</button>
+</form>
+{% endblock%}
