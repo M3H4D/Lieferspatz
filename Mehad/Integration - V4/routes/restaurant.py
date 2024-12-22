@@ -75,8 +75,18 @@ def restaurant_dashboard():
     if 'restaurant' not in session:
         return redirect(url_for('auth.login'))
     
+    # Get the latest restaurant data from the database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM restaurants WHERE RestaurantID = ?', (session['restaurant']['RestaurantID'],))
+    restaurant_data = cursor.fetchone()
+    conn.close()
+    
     #Get items from Database and display
     rows = RDB_util.get_all_items_from_database()
+
+    # Update the session with the latest restaurant data
+    session['restaurant'] = dict(restaurant_data)
 
     # Access restaurant session data
     restaurant_data = session['restaurant']
