@@ -251,7 +251,7 @@ def handle_payment(action):
         return redirect(url_for('customer.customer_dashboard'))
     
     NotesToAdd = session.get('notestoadd', '')
-    status = 'Accepted' if action == 'accept' else 'Rejected'
+    status = 'InProcess' if action == 'accept' else 'Rejected'
     
     # Insert Order
     cursor.execute('INSERT INTO Orders (CustomerID, RestaurantID, Notes, TotalPrice, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?)', 

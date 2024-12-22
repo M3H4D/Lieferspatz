@@ -3,6 +3,17 @@
 {% block head %}
     <title>Received Orders</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .btn.active {
+            border: 2px solid red !important;
+            box-shadow: 0 0 10px red !important;
+            transform: scale(1.1);
+        }
+        .rejected-row {
+            background-color: #f0f0f0;
+            color: #a0a0a0;
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -23,7 +34,7 @@
         </thead>
         <tbody>
             {% for order in orders %}
-            <tr>
+            <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% endif %}">
                 <td>{{ order['OrderID'] }}</td>
                 <td>{{ order['CustomerName'] }}</td>
                 <td>
@@ -37,8 +48,10 @@
                 <td>{{ order['Status'] }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
-                        <button type="submit" name="status" value="Accepted" class="btn btn-success">Accept</button>
-                        <button type="submit" name="status" value="Declined" class="btn btn-danger">Decline</button>
+                        <button type="submit" name="status" value="InProcess" class="btn btn-warning {% if order['Status'] == 'InProcess' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Process</button>
+                        <button type="submit" name="status" value="InDelivery" class="btn btn-info {% if order['Status'] == 'InDelivery' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Delivery</button>
+                        <button type="submit" name="status" value="Delivered" class="btn btn-success {% if order['Status'] == 'Delivered' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Delivered</button>
+                        <button type="submit" name="status" value="Rejected" class="btn btn-danger {% if order['Status'] == 'Rejected' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Reject</button>
                     </form>
                 </td>
             </tr>

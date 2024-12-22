@@ -33,6 +33,10 @@ def register_restaurant():
             flash('Email is already in use, please choose a different one.', 'danger')
             conn.close()
             return render_template('register_restaurant.html')
+        
+        if image and not allowed_file(image.filename):
+            flash('Please use .jpg or .jpeg or .png or .gif extension images only', 'danger')
+            return render_template('register_restaurant.html')
 
         image_path = None
         if image and allowed_file(image.filename):
@@ -151,6 +155,7 @@ def received_orders():
         FROM Orders o
         JOIN customers c ON o.CustomerID = c.CustomerID
         WHERE o.RestaurantID = ?
+        ORDER BY o.OrderID DESC
     ''', (session['restaurant']['RestaurantID'],))
     orders = cursor.fetchall()
 
