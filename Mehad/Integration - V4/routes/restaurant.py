@@ -82,11 +82,11 @@ def restaurant_dashboard():
     restaurant_data = cursor.fetchone()
     conn.close()
     
-    #Get items from Database and display
-    rows = RDB_util.get_all_items_from_database()
-
     # Update the session with the latest restaurant data
     session['restaurant'] = dict(restaurant_data)
+
+    #Get items from Database and display
+    rows = RDB_util.get_all_items_from_database()
 
     # Access restaurant session data
     restaurant_data = session['restaurant']
