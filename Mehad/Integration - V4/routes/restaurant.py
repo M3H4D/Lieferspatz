@@ -139,17 +139,6 @@ def restaurant_edit_item():
 
 
 
-@restaurant_bp.route('/order_history')
-def restaurant_order_history():
-    conn = RDB_util.connect_to_database()
-    row = RDB_util.get_all_orders_from_database()
-    customers = []
-    for c in range(0,len(row)):
-        customers.append(RDB_util.get_customer(row[c][2]))
-    restaurant_data = session['restaurant']
-    return render_template('restaurant_order_history.html', user=restaurant_data, orders = row, customers = customers)
-
-
 @restaurant_bp.route('/restaurant/received_orders')
 def received_orders():
     if 'restaurant' not in session:

@@ -20,7 +20,7 @@
     {% for restaurant in restaurantsclose %}
     <div>
       <form method="POST" action="{{ url_for('customer.itemorder') }}"> 
-        <input type="image" src= "{{ url_for('static', filename=restaurant['ImageURL']) }}" alt="{{restaurant['Name']}}" style="width:200px;height:120px;" />
+        <input type="image" src= "{{ url_for('static', filename=restaurant['ImageURL'].split('static/')[1]) }}" alt="{{restaurant['Name']}}" style="width:200px;height:120px;" />
         <input type="hidden" name="selectedID" value="{{ restaurant['RestaurantID'] }}">
         <!-- Apparently You Cannot Receive Values From An Input Type = Image Hyperlink!! -->
       </form>

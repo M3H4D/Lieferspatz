@@ -190,12 +190,14 @@ def paymentconfirm():
     cursor.execute('SELECT * FROM restaurants WHERE RestaurantID = ?', (session['chosenrestID'],))
     restaurantchosen = cursor.fetchone()
     conn.close()
-    
-    if request.method == 'POST':
-        NotesToAdd = request.form['notestoadd']
-        session['notestoadd'] = NotesToAdd
-        flash("Payment request sent. Waiting for restaurant response.", 'success')
-        return redirect(url_for('customer.customer_dashboard'))
+
+
+    # We probably will delete this
+    # if request.method == 'POST':
+    #     NotesToAdd = request.form['notestoadd']
+    #     session['notestoadd'] = NotesToAdd
+    #     flash("Payment request sent. Waiting for restaurant response.", 'success')
+    #     return redirect(url_for('customer.customer_dashboard'))
     
     return render_template('paymentconfirm.html', customer=customer_data, restaurantchosen=restaurantchosen)
 
