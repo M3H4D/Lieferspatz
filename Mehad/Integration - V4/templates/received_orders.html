@@ -50,7 +50,7 @@
                     <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
                         <button type="submit" name="status" value="InProcess" class="btn btn-warning {% if order['Status'] == 'InProcess' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Process</button>
                         <button type="submit" name="status" value="InDelivery" class="btn btn-info {% if order['Status'] == 'InDelivery' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Delivery</button>
-                        <button type="submit" name="status" value="Delivered" class="btn btn-success {% if order['Status'] == 'Delivered' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Delivered</button>
+                        <button type="submit" name="status" value="Completed" class="btn btn-success {% if order['Status'] == 'Completed' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Completed</button>
                         <button type="submit" name="status" value="Rejected" class="btn btn-danger {% if order['Status'] == 'Rejected' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Reject</button>
                     </form>
                 </td>

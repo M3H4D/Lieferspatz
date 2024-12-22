@@ -59,7 +59,7 @@ def create_tables():
                         ItemID INTEGER PRIMARY KEY AUTOINCREMENT,
                         RestaurantID INTEGER,
                         Name TEXT,
-                        Price INTEGER,
+                        Price REAL,
                         Description TEXT,
                         ImageURL TEXT,
                         CreatedAt DATETIME,
@@ -73,12 +73,12 @@ def create_tables():
                         OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
                         RestaurantID INTEGER,
                         CustomerID INTEGER,
-                        TotalPrice INTEGER,
+                        TotalPrice REAL,
                         Notes TEXT,
                         Status TEXT,
                         CreatedAt DATETIME,
-                        RestaurantMoney INTEGER,
-                        LieferMoney INTEGER,
+                        RestaurantMoney REAL,
+                        LieferMoney REAL,
                         FOREIGN KEY (RestaurantID) REFERENCES restaurants(RestaurantID),
                         FOREIGN KEY (CustomerID) REFERENCES customers(CustomerID)       
                 )
@@ -92,7 +92,7 @@ def create_tables():
                         OrderID INTEGER,
                         ItemID INTEGER,
                         Quantity INTEGER,
-                        Price INTEGER,
+                        Price REAL,
                         FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
                         FOREIGN KEY (ItemID) REFERENCES Items(ItemID)
                 )

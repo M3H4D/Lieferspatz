@@ -253,9 +253,19 @@ def handle_payment(action):
     NotesToAdd = session.get('notestoadd', '')
     status = 'InProcess' if action == 'accept' else 'Rejected'
     
+    # Calculate RestaurantMoney and LieferMoney only if the action is 'accept'
+    restaurant_money = 0.00
+    liefer_money = 0.00
+    if action == 'accept':
+        total_price = session['total_price']
+        restaurant_money = round(total_price * 0.85, 2)
+        liefer_money = round(total_price * 0.15, 2)
+    
     # Insert Order
-    cursor.execute('INSERT INTO Orders (CustomerID, RestaurantID, Notes, TotalPrice, Status, CreatedAt) VALUES (?, ?, ?, ?, ?, ?)', 
-                   (customer_data['CustomerID'], session['chosenrestID'], NotesToAdd, session['total_price'], status, datetime.now()))
+    cursor.execute('''
+        INSERT INTO Orders (CustomerID, RestaurantID, Notes, TotalPrice, Status, CreatedAt, RestaurantMoney, LieferMoney)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (customer_data['CustomerID'], session['chosenrestID'], NotesToAdd, session['total_price'], status, datetime.now(), restaurant_money, liefer_money))
     OrderID = cursor.lastrowid
     
     # Insert Order Items
@@ -270,6 +280,17 @@ def handle_payment(action):
         newbalance = balance[0] - session['total_price']
         cursor.execute('UPDATE customers SET Balance = ? WHERE CustomerID = ?', (newbalance, customer_data['CustomerID']))
         session['customer']['Balance'] = newbalance  # Update the balance in the session
+        
+        # Update restaurant's balance
+        cursor.execute('SELECT Balance FROM restaurants WHERE RestaurantID = ?', (session['chosenrestID'],))
+        restaurant_balance = cursor.fetchone()[0]
+        new_restaurant_balance = restaurant_balance + restaurant_money
+        cursor.execute('UPDATE restaurants SET Balance = ? WHERE RestaurantID = ?', (new_restaurant_balance, session['chosenrestID']))
+        
+        # # Import socketio here to avoid circular import FOR FUTURE => CURRENTLY NOT WORKING
+        # from app import socketio
+        # # Emit WebSocket event to update restaurant balance
+        # socketio.emit('update_balance', {'restaurant_id': session['chosenrestID'], 'new_balance': new_restaurant_balance}, room=f'restaurant_{session["chosenrestID"]}')
     
     conn.commit()
     conn.close()
