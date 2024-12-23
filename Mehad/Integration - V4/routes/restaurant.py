@@ -24,6 +24,17 @@ def register_restaurant():
         close_time = request.form['close_time']
         delivery_zip_codes = request.form.getlist('delivery_zip_codes') # Get a list of delivery zip codes
 
+         # Validate ZIP code
+        if not zip_code.isdigit():
+            flash('Please provide a valid ZIP Code', 'danger')
+            return render_template('register_restaurant.html')
+
+        # Validate delivery ZIP codes
+        for delivery_zip_code in delivery_zip_codes:
+            if not delivery_zip_code.isdigit():
+                flash('All delivery ZIP codes must be valid', 'danger')
+                return render_template('register_restaurant.html')
+        
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM restaurants WHERE Email = ?', (email,))
@@ -98,6 +109,19 @@ def restaurant_additems():
     if request.method == 'POST':
 
         image = request.files['image_url']
+
+        # Checking whether the image extension is not allowed then display a flash message
+        if image and not allowed_file(image.filename):
+            flash('Please use .jpg or .jpeg or .png or .gif extension images only', 'danger')
+            return render_template('add_item.html', user=session['restaurant'])
+        
+        # Validate price
+        try:
+            price = float(request.form['Price'])
+        except ValueError:
+            flash('Price must be a number', 'danger')
+            return render_template('add_item.html', user=session['restaurant'])
+        
         image_path = None
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
@@ -125,10 +149,10 @@ def restaurant_delete_item():
 def restaurant_edit_item_screen():
     # clicking edit on html page retrieves the ItemID and then renders the edit item page
     # we require 2 pages because I want to first display old data and then submit new data
-    row = RDB_util.get_item_from_database(request.form['ItemID'])
+    item_id = request.args.get('ItemID') if request.method == 'GET' else request.form['ItemID']
+    row = RDB_util.get_item_from_database(item_id)
     restaurant_data = session['restaurant']
-
-    return render_template('edit_item.html', user=restaurant_data, item = row)
+    return render_template('edit_item.html', user=restaurant_data, item=row)
 
 @restaurant_bp.route('/edit_item', methods=['GET', 'POST'])
 def restaurant_edit_item():
@@ -137,6 +161,23 @@ def restaurant_edit_item():
     if request.method == 'POST':
 
         image = request.files['image_url']
+
+       # Checking whether the image extension is not allowed then display a flash message
+        if image and not allowed_file(image.filename):
+            flash('Please use .jpg or .jpeg or .png or .gif extension images only', 'danger')
+            row = RDB_util.get_item_from_database(request.form['ItemID'])
+            restaurant_data = session['restaurant']
+            return render_template('edit_item.html', user=restaurant_data, item=row)
+        
+        # Validate price
+        try:
+            price = float(request.form['Price'])
+        except ValueError:
+            flash('Price must be a number', 'danger')
+            row = RDB_util.get_item_from_database(request.form['ItemID'])
+            restaurant_data = session['restaurant']
+            return render_template('edit_item.html', user=restaurant_data, item=row)
+
         image_path = None
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)

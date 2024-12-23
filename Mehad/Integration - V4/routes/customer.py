@@ -25,6 +25,15 @@ def register_customer():
         phone_number = request.form['phone_number']
         password = generate_password_hash(request.form['password'])
 
+        # Validate ZIP code and phone number
+        if not zip_code.isdigit():
+            flash('Please provide a valid ZIP Code', 'danger')
+            return render_template('register_customer.html')
+        
+        if not phone_number.isdigit():
+            flash('Please provide a valid phone number', 'danger')
+            return render_template('register_customer.html')
+
         conn = get_db_connection()
 
         cursor = conn.cursor()
@@ -217,6 +226,11 @@ def editcustomerdetails():
         last_name = request.form['last_name']
         address = request.form['address']
         zip_code = request.form['zip_code']
+
+        # Validate ZIP code
+        if not zip_code.isdigit():
+            flash('Please provide a valid ZIP Code', 'danger')
+            return render_template('editcustomerdetails.html', user=customer_data)
 
         datachange = ' UPDATE customers SET FirstName=?, LastName=?, Address=?, ZipCode=? WHERE CustomerID = ? '
         cursor.execute(datachange, (first_name, last_name, address, zip_code, user_id))
