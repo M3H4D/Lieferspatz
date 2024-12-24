@@ -12,7 +12,7 @@
     <h1>Welcome, {{ user['Name'] }}!</h1>
     <p>Address: {{ user['Address'] }}</p>
     <p>Description: {{ user['Description'] }}</p>
-    <p>Balance: {{ user['Balance'] }}</p>
+    <p>Balance: {{ user['Balance'] | float | round(2) }}</p>
 
     {% if user.ImageURL %}
         <img src="{{ url_for( 'static', filename=user.ImageURL.split('static/')[1]) }}" alt="Restaurant Image" class="img-fluid">
