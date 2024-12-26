@@ -244,7 +244,7 @@ def editcustomerdetails():
 
 # Ensure That Shopping Cart Refuses Customer Choosing Another Rest, Flash Too.
 
-@customer_bp.route('/customer/handle_payment/<action>', methods=['GET'])
+@customer_bp.route('/customer/handle_payment/<action>', methods=['GET', 'POST'])
 def handle_payment(action):
     if 'customer' not in session:
         return redirect(url_for('auth.login'))
@@ -264,7 +264,7 @@ def handle_payment(action):
         conn.close()
         return redirect(url_for('customer.customer_dashboard'))
     
-    NotesToAdd = session.get('notestoadd', '')
+    NotesToAdd = request.form.get('notestoadd', '')
     status = 'InProcess' if action == 'accept' else 'Rejected'
     
     # Calculate RestaurantMoney and LieferMoney only if the action is 'accept'

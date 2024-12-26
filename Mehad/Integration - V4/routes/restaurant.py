@@ -202,7 +202,7 @@ def received_orders():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT o.OrderID, c.FirstName || ' ' || c.LastName AS CustomerName, o.TotalPrice, o.Status
+        SELECT o.OrderID, c.FirstName || ' ' || c.LastName AS CustomerName, c.Address, o.CreatedAt, o.Notes, o.TotalPrice, o.Status
         FROM Orders o
         JOIN customers c ON o.CustomerID = c.CustomerID
         WHERE o.RestaurantID = ?
@@ -212,6 +212,9 @@ def received_orders():
 
     # Convert sqlite3.Row objects to dictionaries
     orders = [dict(order) for order in orders]
+    for order in orders:
+        order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
+
 
     # Fetch items for each order
     for order in orders:

@@ -79,13 +79,15 @@
     // Receive restaurant acknowledgment
     socket.on('restaurant_ack', function (data) {
         alert(`Restaurant Response: ${data.message}`);
+        // const form = document.querySelector('#paymentForm');
         if (data.message === 'Payment accepted') {
-            // Redirect to handle payment deduction and cart clearing
-            window.location.href = "{{ url_for('customer.handle_payment', action='accept') }}";
+             // Redirect to handle payment deduction and cart clearing
+             document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='accept') }}";
         } else {
             // Redirect to clear cart and go to dashboard
-            window.location.href = "{{ url_for('customer.handle_payment', action='decline') }}";
+            document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='decline') }}";
         }
+        document.querySelector('#paymentForm').submit();
     });
 </script>
 {% endblock %}

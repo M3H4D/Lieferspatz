@@ -26,6 +26,9 @@
             <tr>
                 <th>Order ID</th>
                 <th>Customer Name</th>
+                <th>Customer Address</th>
+                <th>Time of Order</th>
+                <th>Notes</th>
                 <th>Items</th>
                 <th>Total Price</th>
                 <th>Status</th>
@@ -37,6 +40,9 @@
             <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% endif %}">
                 <td>{{ order['OrderID'] }}</td>
                 <td>{{ order['CustomerName'] }}</td>
+                <td>{{ order['Address'] }}</td>
+                <td>{{ order['CreatedAt'].strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ order['Notes'] }}</td>
                 <td>
                     <ul>
                         {% for item in order['Items'] %}
