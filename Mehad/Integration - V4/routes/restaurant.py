@@ -99,9 +99,16 @@ def restaurant_dashboard():
     #Get items from Database and display
     rows = RDB_util.get_all_items_from_database()
 
+    # Convert CreatedAt to datetime object
+    items = []
+    for row in rows:
+        row = list(row)  # Convert tuple to list to allow modification
+        row[4] = datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S.%f')
+        items.append(row)
+
     # Access restaurant session data
     restaurant_data = session['restaurant']
-    return render_template('dashboard_restaurant.html', user=restaurant_data, items = rows)
+    return render_template('dashboard_restaurant.html', user=restaurant_data, items = items)
 
 
 @restaurant_bp.route('/restaurant/additems', methods=['GET', 'POST'])

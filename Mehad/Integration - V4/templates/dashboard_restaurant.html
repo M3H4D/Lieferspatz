@@ -13,6 +13,8 @@
     <p>Address: {{ user['Address'] }}</p>
     <p>Description: {{ user['Description'] }}</p>
     <p>Balance: {{ user['Balance'] | float | round(2) }}</p>
+    <p>Open Time: {{ user['OpenTime'] }}</p>
+    <p>Close Time: {{ user['CloseTime'] }}</p>
 
     {% if user.ImageURL %}
         <img src="{{ url_for( 'static', filename=user.ImageURL.split('static/')[1]) }}" alt="Restaurant Image" class="img-fluid">
@@ -41,7 +43,7 @@
                 <td>{{ item[1] }}</td>
                 <td>€ {{ item[2] }}</td>
                 <td>{{ item[3] }}</td>
-                <td>{{ item[4] }}</td>
+                <td>{{ item[4].strftime('%Y-%m-%d %H:%M') }}</td>
                 <td><form action="/restaurant/edit_item_screen" method="POST" style="margin: 0;">
                     <button type="submit" name="ItemID" value="{{item[0]}}"> Edit </button>
                 </form></td>

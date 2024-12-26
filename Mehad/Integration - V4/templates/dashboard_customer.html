@@ -33,17 +33,19 @@
 <!-- To Show the Restaurant Listing -->
 <style>
   .restaurantlist {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
   }
   .restaurantlist > div {
-    width:25%;
     display: flex;
     flex-direction: column;
     align-items: center;
     margin: 10px;
     position: relative;
+    border-radius: 15px; /* Add curved borders */
+    overflow: hidden; /* Ensure content stays within the rounded corners */
+    border: 1px solid #ddd; /* Add a grey border */
   }
   .closed-restaurant {
     border: 2px solid red;
