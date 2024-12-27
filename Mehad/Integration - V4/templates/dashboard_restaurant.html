@@ -6,13 +6,34 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
 {% endblock%}
 
 {% block content %}
     <h1>Welcome, {{ user['Name'] }}!</h1>
     <p>Address: {{ user['Address'] }}</p>
     <p>Description: {{ user['Description'] }}</p>
-    <p>Balance: {{ user['Balance'] | float | round(2) }}</p>
+    <p>Balance: € {{ user['Balance'] | float | round(2) }}</p>
     <p>Open Time: {{ user['OpenTime'] }}</p>
     <p>Close Time: {{ user['CloseTime'] }}</p>
 
