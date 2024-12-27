@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Edit Restaurant Details</title>
+    <style>
+        .restaurant-image {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+        }
+        .zip-code-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .zip-code-field input {
+            flex: 1;
+        }
+        .zip-code-field button {
+            margin-left: 5px;
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+        }
+        .zip-code-field button i {
+            font-size: 1.2em;
+        }
+    </style>
+{% endblock%}
+
+{% block content %}
+<h1>Edit Restaurant Details</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <label for="name">Restaurant Name:</label>
+    <input type="text" name="name" value="{{ restaurant['Name'] }}" required><br>
+
+    <label for="address">Address:</label>
+    <input type="text" name="address" value="{{ restaurant['Address'] }}" required><br>
+
+    <label for="zip_code">Zip Code:</label>
+    <input type="text" name="zip_code" value="{{ restaurant['ZipCode'] }}" required><br>
+
+    <label for="description">Description:</label>
+    <textarea name="description" required>{{ restaurant['Description'] }}</textarea><br>
+
+    <label for="image_url">Image:</label>
+    <input type="file" name="image_url" accept="image/*"><br>
+    {% if restaurant['ImageURL'] %}
+        <img src="{{ url_for('static', filename=restaurant['ImageURL'].split('static/')[1]) }}" alt="Restaurant Image" class="restaurant-image img-fluid">
+        <p><b>Current Image:</b> {{ restaurant['ImageURL'].split('/')[-1] }}</p>
+    {% endif %}<br>
+
+    <label for="open_time">Open Time:</label>
+    <input type="time" name="open_time" value="{{ restaurant['OpenTime'] }}" required><br>
+
+    <label for="close_time">Close Time:</label>
+    <input type="time" name="close_time" value="{{ restaurant['CloseTime'] }}" required><br>
+
+    <label for="delivery_zip_codes">Delivery ZIP Codes:</label>
+    <div id="zipCodeContainer">
+        {% for zip_code in delivery_zip_codes %}
+            <div class="zip-code-field">
+                <input type="text" name="delivery_zip_codes" value="{{ zip_code }}" placeholder="Enter delivery zip code">
+                <button type="button" onclick="removeZipCode(this)"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        {% endfor %}
+    </div>
+    <button type="button" onclick="addZipCode()">Add Another ZIP Code</button><br>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="{{ url_for('restaurant.restaurant_dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script src="{{ url_for('static', filename='js/addZipCodeField.js') }}"></script>
+
+{% endblock %}

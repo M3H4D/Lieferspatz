@@ -30,7 +30,7 @@
                 <th>Time of Order</th>
                 <th>Notes</th>
                 <th>Items</th>
-                <th>Total Price</th>
+                <th>Total Price(85%)</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -50,7 +50,7 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td>€ {{ order['TotalPrice'] }}</td>
+                <td style="color: green; font-weight: bold;">+ € {{ 0.85 * order['TotalPrice'] }} (€{{order['TotalPrice'] }})</td>
                 <td>{{ order['Status'] }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">

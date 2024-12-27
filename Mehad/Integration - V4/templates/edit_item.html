@@ -2,6 +2,14 @@
 
 {% block head %}
     <title>Edit Item</title>
+    <style>
+        .item-image {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+        }
+    </style>
 {% endblock%}
 
 {% block content %}
@@ -16,8 +24,15 @@
     <input type="text" name="Description" value="{{item[0][3]}}"required><br>
 
     <label for="image_url">Image:</label>
-    <input type="file" name="image_url" accept="image/*" value="{{item[0][4]}}" ><br>
+    <input type="file" name="image_url" accept="image/*" value="{{item[0][4]}}"><br>
+    {% if item[0][4] %}
+        <img src="{{ url_for('static', filename=item[0][5].split('static/')[1]) }}" alt="Item Image" class="item-image img-fluid">
+        <p><b>Current Image:</b> {{ item[0][5].split('/')[-1] }}</p>
+    {% endif %}
+    
+    <br>
 
-    <button type="submit" name="ItemID" value="{{item[0][0]}}">Finalize Item</button>
+    <button type="submit" name="ItemID" value="{{item[0][0]}}" class="btn btn-primary">Finalize Item</button>
+    <a href="{{ url_for('restaurant.restaurant_dashboard') }}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock%}

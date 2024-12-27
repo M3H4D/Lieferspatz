@@ -168,6 +168,9 @@ def restaurant_edit_item():
     if request.method == 'POST':
 
         image = request.files['image_url']
+        row = RDB_util.get_item_from_database(request.form['ItemID'])
+        existing_image_path = row[0][5]  # The image URL is at index 5
+
 
        # Checking whether the image extension is not allowed then display a flash message
         if image and not allowed_file(image.filename):
@@ -192,6 +195,8 @@ def restaurant_edit_item():
             os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
             image.save(image_path)
             image_path = image_path.replace(os.path.sep,'/')
+        else:
+            image_path = existing_image_path
 
         relative_image_path = image_path if image_path else None
         RDB_util.update_item_to_database(request.form['Name'], request.form['Price'], request.form['Description'], relative_image_path, request.form['ItemID'])
@@ -249,3 +254,71 @@ def update_order_status(order_id):
     conn.close()
     flash(f"Order {order_id} has been {new_status.lower()}.", 'success')
     return redirect(url_for('restaurant.received_orders'))
+
+@restaurant_bp.route('/restaurant/edit', methods=['GET', 'POST'])
+def edit_restaurant():
+    if 'restaurant' not in session:
+        return redirect(url_for('auth.login'))
+
+    restaurant_data = session['restaurant']
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        address = request.form['address']
+        zip_code = request.form['zip_code']
+        description = request.form['description']
+        open_time = request.form['open_time']
+        close_time = request.form['close_time']
+        delivery_zip_codes = request.form.getlist('delivery_zip_codes')
+
+        # Validate ZIP code
+        if not zip_code.isdigit():
+            flash('Please provide a valid ZIP Code', 'danger')
+            return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+
+        # Validate delivery ZIP codes
+        for delivery_zip_code in delivery_zip_codes:
+            if not delivery_zip_code.isdigit():
+                flash('All delivery ZIP codes must be valid', 'danger')
+                return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+
+        image = request.files['image_url']
+        image_path = restaurant_data['ImageURL']
+
+        if image and not allowed_file(image.filename):
+            flash('Please use .jpg, .jpeg, .png, or .gif extension images only', 'danger')
+            return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+
+        if image and allowed_file(image.filename):
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(Config.UPLOAD_FOLDER, filename)
+            os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+            image.save(image_path)
+            image_path = image_path.replace(os.path.sep, '/')
+
+        cursor.execute('''
+            UPDATE restaurants
+            SET Name = ?, Address = ?, ZipCode = ?, Description = ?, ImageURL = ?, OpenTime = ?, CloseTime = ?
+            WHERE RestaurantID = ?
+        ''', (name, address, zip_code, description, image_path, open_time, close_time, restaurant_data['RestaurantID']))
+
+        cursor.execute('DELETE FROM delivery_zip_codes WHERE RestaurantID = ?', (restaurant_data['RestaurantID'],))
+        for zip_code in delivery_zip_codes:
+            cursor.execute('''
+                INSERT INTO delivery_zip_codes (RestaurantID, ZipCode)
+                VALUES (?, ?)
+            ''', (restaurant_data['RestaurantID'], zip_code))
+
+        conn.commit()
+        conn.close()
+
+        flash('Restaurant details updated successfully!', 'success')
+        return redirect(url_for('restaurant.restaurant_dashboard'))
+
+    cursor.execute('SELECT ZipCode FROM delivery_zip_codes WHERE RestaurantID = ?', (restaurant_data['RestaurantID'],))
+    delivery_zip_codes = [row['ZipCode'] for row in cursor.fetchall()]
+    conn.close()
+
+    return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)

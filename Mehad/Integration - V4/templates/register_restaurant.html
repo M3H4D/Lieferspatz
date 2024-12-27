@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
-
+{% block head %}
+    <style>
+        .zip-code-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .zip-code-field input {
+            flex: 1;
+        }
+        .zip-code-field button {
+            margin-left: 5px;
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+        }
+        .zip-code-field button i {
+            font-size: 1.2em;
+        }
+    </style>
+{% endblock%}
 {% block content %}
     <!-- <script>
         function addZipCode() {
@@ -39,7 +60,10 @@
 
         <label for="delivery_zip_codes">Delivery ZIP Codes:</label>
         <div id="zipCodeContainer">
-            <input type="text" name="delivery_zip_codes" placeholder="Enter deliver zip codes">
+            <div class="zip-code-field">
+                <input type="text" name="delivery_zip_codes" placeholder="Enter deliver zip codes">
+                <button type="button" onclick="removeZipCode(this)"><i class="fas fa-trash-alt"></i></button>
+            </div>
         </div>
         <button type="button" onclick="addZipCode()">Add Another ZIP Code</button><br>
 
