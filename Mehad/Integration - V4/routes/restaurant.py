@@ -147,10 +147,10 @@ def restaurant_additems():
     restaurant_data = session['restaurant']
     return render_template('add_item.html', user=restaurant_data)
 
-@restaurant_bp.route('/delete_item', methods=['GET', 'POST'])
-def restaurant_delete_item():
-    RDB_util.delete_item_from_database(request.form['ItemID'])
-    return redirect(url_for('restaurant.restaurant_dashboard'))
+# @restaurant_bp.route('/delete_item', methods=['GET', 'POST'])
+# def restaurant_delete_item():
+#     RDB_util.delete_item_from_database(request.form['ItemID'])
+#     return redirect(url_for('restaurant.restaurant_dashboard'))
 
 @restaurant_bp.route('/edit_item_screen', methods=['GET', 'POST'])
 def restaurant_edit_item_screen():
@@ -169,7 +169,7 @@ def restaurant_edit_item():
 
         image = request.files['image_url']
         row = RDB_util.get_item_from_database(request.form['ItemID'])
-        existing_image_path = row[0][5]  # The image URL is at index 5
+        existing_image_path = row[0][5]  # Assuming the image URL is at index 5
 
 
        # Checking whether the image extension is not allowed then display a flash message
@@ -322,3 +322,10 @@ def edit_restaurant():
     conn.close()
 
     return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+
+@restaurant_bp.route('/delete_item', methods=['POST'])
+def restaurant_delete_item():
+    item_id = request.form['ItemID']
+    RDB_util.delete_item_from_database(item_id)
+    flash('Item Deleted!', 'success')
+    return redirect(url_for('restaurant.restaurant_dashboard'))
