@@ -252,7 +252,7 @@ def update_order_status(order_id):
     cursor.execute('UPDATE Orders SET Status = ? WHERE OrderID = ?', (new_status, order_id))
     conn.commit()
     conn.close()
-    flash(f"Order {order_id} has been {new_status.lower()}.", 'success')
+    flash(f"Order {order_id} is {new_status.lower()}.", 'success')
     return redirect(url_for('restaurant.received_orders'))
 
 @restaurant_bp.route('/restaurant/edit', methods=['GET', 'POST'])

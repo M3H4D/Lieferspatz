@@ -13,6 +13,14 @@
             background-color: #f0f0f0;
             color: #a0a0a0;
         }
+        .total-price {
+            color: green;
+            font-weight: bold;
+        }
+        .total-price-rejected {
+            color: #a0a0a0;
+            font-weight: normal;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -50,7 +58,13 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td style="color: green; font-weight: bold;">+ € {{ (0.85 * order['TotalPrice']) | round(2) }} (€{{order['TotalPrice'] | round(2) }})</td>
+                <td class="{% if order['Status'] == 'Rejected' %}total-price-rejected{% else %}total-price{% endif %}">
+                    {% if order['Status'] == 'Rejected' %}
+                        € {{ (0.85 * order['TotalPrice']) | round(2) }} (€{{ order['TotalPrice'] | round(2) }})
+                    {% else %}
+                        + € {{ (0.85 * order['TotalPrice']) | round(2) }} (€{{ order['TotalPrice'] | round(2) }})
+                    {% endif %}
+                </td>                
                 <td>{{ order['Status'] }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
