@@ -70,16 +70,46 @@
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const currentTime = new Date().toTimeString().split(' ')[0];
+    const currentTime = new Date();
+    console.log("Current Time:", currentTime);
     const restaurants = document.querySelectorAll('.restaurant');
 
     restaurants.forEach(function(restaurant) {
         const openTime = restaurant.getAttribute('data-open-time');
         const closeTime = restaurant.getAttribute('data-close-time');
+        console.log("Restaurant:", restaurant);
+        console.log("Open Time:", openTime);
+        console.log("Close Time:", closeTime);
 
-        if (currentTime < openTime || currentTime > closeTime) {
+        const openTimeParts = openTime.split(':');
+        const closeTimeParts = closeTime.split(':');
+
+        const openDate = new Date(currentTime);
+        openDate.setHours(openTimeParts[0], openTimeParts[1], 0, 0);
+        console.log("Open Date:", openDate);
+
+        const closeDate = new Date(currentTime);
+        closeDate.setHours(closeTimeParts[0], closeTimeParts[1], 0, 0);
+        console.log("Close Date:", closeDate);
+        
+        // Adjust openDate to handle the case where current time is past midnight but within open hours
+        if (closeDate.getHours() <= openDate.getHours() &&  currentTime < openDate && currentTime.getHours() < 12) {
+            openDate.setDate(openDate.getDate() - 1);
+            console.log("Adjusted Open Date:", openDate);
+        }
+
+        if (closeDate <= openDate) {
+            closeDate.setDate(closeDate.getDate() + 1); // Handle overnight closing time
+            console.log("Adjusted Close Date:", closeDate);
+        }
+
+        // Check if the current time is outside the open and close times
+        if (currentTime < openDate || currentTime > closeDate) {
             restaurant.classList.add('closed-restaurant');
             restaurant.querySelector('.closed-text').style.display = 'block';
+        } else {
+            restaurant.classList.remove('closed-restaurant');
+            restaurant.querySelector('.closed-text').style.display = 'none';
         }
     });
 });
@@ -87,4 +117,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </br>
 <!-- End of New Part By Omar To Send to itemorder.html! -->
 {% endblock %}
-
