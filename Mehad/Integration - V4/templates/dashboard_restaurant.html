@@ -31,6 +31,8 @@
 
 {% block content %}
     <h1>Welcome, {{ user['Name'] }}!</h1>
+    <p>Status: <span style="font-weight: bold;" class="{% if status == 'OPEN' %}text-success{% else %}text-danger{% endif %}">{{ status }}</span></p>
+    <p>Email: {{ user['Email'] }}</p>
     <p>Address: {{ user['Address'] }}</p>
     <p>Description: {{ user['Description'] }}</p>
     <p>Balance: € {{ user['Balance'] | float | round(2) }}</p>

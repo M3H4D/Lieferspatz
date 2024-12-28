@@ -101,6 +101,18 @@ def restaurant_dashboard():
     # Update the session with the latest restaurant data
     session['restaurant'] = dict(restaurant_data)
 
+    # Determine the current status of the restaurant
+    current_time = datetime.now().time()
+    open_time = datetime.strptime(restaurant_data['OpenTime'], '%H:%M').time()
+    close_time = datetime.strptime(restaurant_data['CloseTime'], '%H:%M').time()
+    
+    if open_time < close_time:
+        is_open = open_time <= current_time < close_time
+    else:
+        is_open = current_time >= open_time or current_time < close_time
+    
+    status = "OPEN" if is_open else "CLOSED"
+
     #Get items from Database and display
     rows = RDB_util.get_all_items_from_database()
 
@@ -113,7 +125,7 @@ def restaurant_dashboard():
 
     # Access restaurant session data
     restaurant_data = session['restaurant']
-    return render_template('dashboard_restaurant.html', user=restaurant_data, items = items, delivery_zip_codes=delivery_zip_codes)
+    return render_template('dashboard_restaurant.html', user=restaurant_data, items = items, delivery_zip_codes=delivery_zip_codes, status=status)
 
 
 @restaurant_bp.route('/restaurant/additems', methods=['GET', 'POST'])
