@@ -12,10 +12,12 @@ def setup_socket_events(socketio):
     @socketio.on('send_payment')
     def handle_payment(data):
         customer_id = session['customer']['CustomerID']
+        customer_name = f"{session['customer']['FirstName']} {session['customer']['LastName']}"
         restaurant_id = session['chosenrestID']
         room = f'restaurant_{restaurant_id}'
         emit('payment_received', {
             'customer_id': customer_id,
+            'customer_name': customer_name,
             'message': data['message']
         }, room=room)
 

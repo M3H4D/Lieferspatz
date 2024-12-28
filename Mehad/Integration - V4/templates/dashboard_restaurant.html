@@ -114,8 +114,9 @@
         // Handle incoming payment notifications
         socket.on('payment_received', function (data) {
             const customerId = data.customer_id;
+            const customerName = data.customer_name;
             const message = data.message;
-            document.getElementById('paymentMessage').innerText = `Payment received from customer ${customerId}: ${message}.`;
+            document.getElementById('paymentMessage').innerText = `Payment received from ${customerName}: ${message}.`;
 
             // Show the modal
             $('#paymentModal').modal('show');
