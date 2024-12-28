@@ -238,7 +238,8 @@ def editcustomerdetails():
         cursor.execute('SELECT * FROM customers WHERE CustomerID = ?', (user_id,))
         session['customer'] = dict(cursor.fetchone())
         conn.close()
-
+        
+        flash('Customer Details updated successfully!', 'success')
         return redirect(url_for('customer.customer_dashboard'))
     return render_template('editcustomerdetails.html', user=session['customer'])
 

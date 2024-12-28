@@ -8,7 +8,7 @@
     <li>ZipCode: {{ user['ZipCode'] }}</li>
     <li>Phone Number: {{ user['PhoneNumber'] }}</li>
     <li>Balance: € {{ user['Balance'] }}</li>
-    <li>Status: {{ user['Status'] }}</li>
+    <li>Zip Code: {{ user['ZipCode'] }}</li>
     <li>Role: {{ user['Role'] }}</li>
 </ul>
 
@@ -19,5 +19,6 @@
     <input type="text" name="address" value="{{ user['Address'] }}" placeholder="{{ user['Address'] }}" class="form-control mb-2" required>
     <input type="text" name="zip_code" value="{{ user['ZipCode'] }}" placeholder="{{ user['ZipCode'] }}" class="form-control mb-2" required>
     <button type="submit" class="btn btn-warning">Save Data</button>
+    <a href="{{ url_for('customer.customer_dashboard') }}" class="btn btn-danger">Cancel</a>
 </form>
 {% endblock %}
