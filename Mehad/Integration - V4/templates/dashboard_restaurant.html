@@ -36,6 +36,12 @@
     <p>Balance: € {{ user['Balance'] | float | round(2) }}</p>
     <p>Open Time: {{ user['OpenTime'] }}</p>
     <p>Close Time: {{ user['CloseTime'] }}</p>
+    <p>Delivery ZIP Codes:</p>
+    <ul>
+        {% for zip_code in delivery_zip_codes %}
+            <li>{{ zip_code }}</li>
+        {% endfor %}
+    </ul>
 
     {% if user.ImageURL %}
         <img src="{{ url_for( 'static', filename=user.ImageURL.split('static/')[1]) }}" alt="Restaurant Image" class="img-fluid">

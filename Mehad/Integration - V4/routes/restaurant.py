@@ -91,6 +91,11 @@ def restaurant_dashboard():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM restaurants WHERE RestaurantID = ?', (session['restaurant']['RestaurantID'],))
     restaurant_data = cursor.fetchone()
+    
+     # Fetch delivery ZIP codes
+    cursor.execute('SELECT ZipCode FROM delivery_zip_codes WHERE RestaurantID = ?', (session['restaurant']['RestaurantID'],))
+    delivery_zip_codes = [row['ZipCode'] for row in cursor.fetchall()]
+        
     conn.close()
     
     # Update the session with the latest restaurant data
@@ -108,7 +113,7 @@ def restaurant_dashboard():
 
     # Access restaurant session data
     restaurant_data = session['restaurant']
-    return render_template('dashboard_restaurant.html', user=restaurant_data, items = items)
+    return render_template('dashboard_restaurant.html', user=restaurant_data, items = items, delivery_zip_codes=delivery_zip_codes)
 
 
 @restaurant_bp.route('/restaurant/additems', methods=['GET', 'POST'])
