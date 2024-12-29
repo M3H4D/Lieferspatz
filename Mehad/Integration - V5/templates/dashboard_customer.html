@@ -10,7 +10,7 @@
 <p>Your profile details:</p>
 <ul>
     <li>Phone Number: {{ user['PhoneNumber'] }}</li>
-    <li>Balance: € {{ user['Balance'] }}</li>
+    <li>Balance: € {{ user['Balance'] | round(2) }}</li>
     <li>Zip Code: {{ user['ZipCode'] }}</li>
     <li>Role: {{ user['Role'] }}</li>
 </ul>
