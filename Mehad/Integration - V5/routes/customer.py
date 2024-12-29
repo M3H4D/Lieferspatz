@@ -201,15 +201,7 @@ def paymentconfirm():
     cursor.execute('SELECT * FROM restaurants WHERE RestaurantID = ?', (session['chosenrestID'],))
     restaurantchosen = cursor.fetchone()
     conn.close()
-
-
-    # We probably will delete this
-    # if request.method == 'POST':
-    #     NotesToAdd = request.form['notestoadd']
-    #     session['notestoadd'] = NotesToAdd
-    #     flash("Payment request sent. Waiting for restaurant response.", 'success')
-    #     return redirect(url_for('customer.customer_dashboard'))
-    
+ 
     return render_template('paymentconfirm.html', customer=customer_data, restaurantchosen=restaurantchosen)
 
 @customer_bp.route('/customer/editcustomerdetails', methods=['GET', 'POST'])
@@ -259,66 +251,127 @@ def handle_payment(action):
     # Check Balance First.
     cursor.execute('SELECT Balance FROM customers WHERE CustomerID = ?', (customer_data['CustomerID'],))
     balance = cursor.fetchone()
-    if balance[0] < session['total_price']:
+    if action == 'invalid':
         flash("Insufficient Balance Amount.", 'danger')
         session.pop('shoppingcart')
         session['total_price'] = 0
         session['total_quantity'] = 0
         conn.close()
         return redirect(url_for('customer.customer_dashboard'))
-    
-    NotesToAdd = request.form.get('notestoadd', '')
-    status = 'InProcess' if action == 'accept' else 'Rejected'
-    
-    # Calculate RestaurantMoney and LieferMoney only if the action is 'accept'
-    restaurant_money = 0.00
-    liefer_money = 0.00
-    if action == 'accept':
-        total_price = session['total_price']
-        restaurant_money = round(total_price * 0.85, 2)
-        liefer_money = round(total_price * 0.15, 2)
-    
-    # Insert Order
-    cursor.execute('''
-        INSERT INTO Orders (CustomerID, RestaurantID, Notes, TotalPrice, Status, CreatedAt, RestaurantMoney, LieferMoney)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (customer_data['CustomerID'], session['chosenrestID'], NotesToAdd, session['total_price'], status, datetime.now(), restaurant_money, liefer_money))
-    OrderID = cursor.lastrowid
-    
-    # Insert Order Items
-    for key, value in session['shoppingcart'].items():
-        itemID = session['shoppingcart'][key]['ItemToAdd']  # Or = "key"
-        quantity = session['shoppingcart'][key]['Quantity']
-        priceofitem = session['shoppingcart'][key]['Price']
-        cursor.execute('INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?)', 
-                       (OrderID, itemID, quantity, priceofitem))
-    
-    if action == 'accept':
-        newbalance = balance[0] - session['total_price']
-        cursor.execute('UPDATE customers SET Balance = ? WHERE CustomerID = ?', (newbalance, customer_data['CustomerID']))
-        session['customer']['Balance'] = newbalance  # Update the balance in the session
-        
-        # Update restaurant's balance
-        cursor.execute('SELECT Balance FROM restaurants WHERE RestaurantID = ?', (session['chosenrestID'],))
-        restaurant_balance = cursor.fetchone()[0]
-        new_restaurant_balance = restaurant_balance + restaurant_money
-        cursor.execute('UPDATE restaurants SET Balance = ? WHERE RestaurantID = ?', (new_restaurant_balance, session['chosenrestID']))
-        
-        # # Import socketio here to avoid circular import FOR FUTURE => CURRENTLY NOT WORKING
-        # from app import socketio
-        # # Emit WebSocket event to update restaurant balance
-        # socketio.emit('update_balance', {'restaurant_id': session['chosenrestID'], 'new_balance': new_restaurant_balance}, room=f'restaurant_{session["chosenrestID"]}')
-    
-    conn.commit()
-    conn.close()
-    
-    if action == 'accept':
-        flash("Payment Accepted and Successful.", 'success')
     else:
-        flash("Payment Declined by Restaurant.", 'danger')
+        NotesToAdd = request.form.get('notestoadd', '')
+        status = 'InProcess' if action == 'accept' else 'Rejected'
+        
+        # Calculate RestaurantMoney and LieferMoney only if the action is 'accept'
+        restaurant_money = 0.00
+        liefer_money = 0.00
+        if action == 'accept':
+            total_price = session['total_price']
+            restaurant_money = round(total_price * 0.85, 2)
+            liefer_money = round(total_price * 0.15, 2)
+        
+        # Insert Order
+        cursor.execute('''
+            INSERT INTO Orders (CustomerID, RestaurantID, Notes, TotalPrice, Status, CreatedAt, RestaurantMoney, LieferMoney)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (customer_data['CustomerID'], session['chosenrestID'], NotesToAdd, session['total_price'], status, datetime.now(), restaurant_money, liefer_money))
+        OrderID = cursor.lastrowid
+        
+        # Insert Order Items
+        for key, value in session['shoppingcart'].items():
+            itemID = session['shoppingcart'][key]['ItemToAdd']  # Or = "key"
+            quantity = session['shoppingcart'][key]['Quantity']
+            priceofitem = session['shoppingcart'][key]['Price']
+            cursor.execute('INSERT INTO OrderItems (OrderID, ItemID, Quantity, Price) VALUES (?, ?, ?, ?)', 
+                           (OrderID, itemID, quantity, priceofitem))
+        
+        if action == 'accept':
+            newbalance = balance[0] - session['total_price']
+            cursor.execute('UPDATE customers SET Balance = ? WHERE CustomerID = ?', (newbalance, customer_data['CustomerID']))
+            session['customer']['Balance'] = newbalance  # Update the balance in the session
+            
+            # Update restaurant's balance
+            cursor.execute('SELECT Balance FROM restaurants WHERE RestaurantID = ?', (session['chosenrestID'],))
+            restaurant_balance = cursor.fetchone()[0]
+            new_restaurant_balance = restaurant_balance + restaurant_money
+            cursor.execute('UPDATE restaurants SET Balance = ? WHERE RestaurantID = ?', (new_restaurant_balance, session['chosenrestID']))
+            
+            # # Import socketio here to avoid circular import FOR FUTURE => CURRENTLY NOT WORKING
+            # from app import socketio
+            # # Emit WebSocket event to update restaurant balance
+            # socketio.emit('update_balance', {'restaurant_id': session['chosenrestID'], 'new_balance': new_restaurant_balance}, room=f'restaurant_{session["chosenrestID"]}')
+        
+        conn.commit()
+        conn.close()
+        
+        if action == 'accept':
+            flash("Payment Accepted and Successful.", 'success')
+        else:
+            flash("Payment Declined by Restaurant.", 'danger')
+        
+        # Clear cart
+        session.pop('shoppingcart', None)
+        session['total_price'] = 0
+        session['total_quantity'] = 0
+        return redirect(url_for('customer.customer_dashboard'))
+
+@customer_bp.route('/customer/past_orders')
+def past_orders():
+    if 'customer' not in session:
+        return redirect(url_for('auth.login'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT o.OrderID, r.Name, r.Address, o.CreatedAt, o.Notes, o.TotalPrice, o.Status
+        FROM Orders o
+        JOIN customers c ON c.CustomerID = o.CustomerID
+        JOIN restaurants r ON r.RestaurantID = o.RestaurantID
+        WHERE o.CustomerID = ? AND o.Status IN (?, ?)
+        ORDER BY o.OrderID DESC
+    ''', (session['customer']['CustomerID'], 'InProcess', 'InDelivery',))
+    currentorders = cursor.fetchall()
+
+    cursor.execute('''
+        SELECT o.OrderID, r.Name, r.Address, o.CreatedAt, o.Notes, o.TotalPrice, o.Status
+        FROM Orders o
+        JOIN customers c ON c.CustomerID = o.CustomerID
+        JOIN restaurants r ON r.RestaurantID = o.RestaurantID
+        WHERE o.CustomerID = ? AND o.Status IN (?, ?)
+        ORDER BY o.OrderID DESC
+    ''', (session['customer']['CustomerID'], 'Completed', 'Rejected',))
+    previousorders = cursor.fetchall()
+
+    # In Case No Records Exist For Customer, Look For That Later!
+    # if previousorders == None and currentorders == None: 
+    #     flash("There are no previous orders for this account.", 'danger')
+    #     return redirect(url_for('customer.customer_dashboard'))
+
+    # Conversion of sqlite3.Row objects to Dictionaries
+    currentorders = [dict(order) for order in currentorders]
+    for order in currentorders:
+        order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
+    previousorders = [dict(order) for order in previousorders]
+    for order in previousorders:
+        order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
+
+    # Fetch items for each order
+    for order in currentorders:
+        cursor.execute('''
+            SELECT i.Name, oi.Quantity
+            FROM OrderItems oi
+            JOIN items i ON oi.ItemID = i.ItemID
+            WHERE oi.OrderID = ?
+        ''', (order['OrderID'],))
+        order['Items'] = cursor.fetchall()
+
+    for order2 in previousorders:
+        cursor.execute('''
+            SELECT i.Name, oi.Quantity
+            FROM OrderItems oi
+            JOIN items i ON oi.ItemID = i.ItemID
+            WHERE oi.OrderID = ?
+        ''', (order2['OrderID'],))
+        order2['Items'] = cursor.fetchall()
     
-    # Clear cart
-    session.pop('shoppingcart', None)
-    session['total_price'] = 0
-    session['total_quantity'] = 0
-    return redirect(url_for('customer.customer_dashboard'))
+    conn.close()
+    return render_template('past_orders.html', currentorders=currentorders, previousorders=previousorders)
