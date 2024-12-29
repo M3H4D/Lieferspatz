@@ -60,34 +60,38 @@
     </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
-<script>
-    const socket = io();
-
-    // Join customer-specific room
-    socket.emit('join_room', { room: 'customer_{{ customer["CustomerID"] }}' });
-
-    // Handle payment submission
-    document.querySelector('#paymentForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const notes = document.querySelector('input[name="notestoadd"]').value;
-        
-        // Emit payment event
-        socket.emit('send_payment', { message: `Payment sent with notes: ${notes}` });
-        alert("Payment sent. Waiting for restaurant response...");
-    });
-
-    // Receive restaurant acknowledgment
-    socket.on('restaurant_ack', function (data) {
-        alert(`Restaurant Response: ${data.message}`);
-        // const form = document.querySelector('#paymentForm');
-        if (data.message === 'Payment accepted') {
-             // Redirect to handle payment deduction and cart clearing
-             document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='accept') }}";
-        } else {
-            // Redirect to clear cart and go to dashboard
-            document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='decline') }}";
-        }
-        document.querySelector('#paymentForm').submit();
-    });
-</script>
+{% if session['total_price'] <= customer['Balance']  %}
+    <script>
+        const socket = io();
+    
+        // Join customer-specific room
+        socket.emit('join_room', { room: 'customer_{{ customer["CustomerID"] }}' });
+    
+        // Handle payment submission
+        document.querySelector('#paymentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const notes = document.querySelector('input[name="notestoadd"]').value;
+            
+            // Emit payment event
+            socket.emit('send_payment', { message: `Payment sent with notes: ${notes}` });
+            alert("Payment sent. Waiting for restaurant response...");
+        });
+    
+        // Receive restaurant acknowledgment
+        socket.on('restaurant_ack', function (data) {
+            alert(`Restaurant Response: ${data.message}`);
+            // const form = document.querySelector('#paymentForm');
+            if (data.message === 'Payment accepted') {
+                 // Redirect to handle payment deduction and cart clearing
+                 document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='accept') }}";
+            } else {
+                // Redirect to clear cart and go to dashboard
+                document.querySelector('#paymentForm').action = "{{ url_for('customer.handle_payment', action='decline') }}";
+            }
+            document.querySelector('#paymentForm').submit();
+        });
+    </script>
+{% else %}
+    <meta http-equiv="refresh" content="0; {{ url_for('customer.handle_payment', action='invalid') }}" />
+{% endif %}
 {% endblock %}
