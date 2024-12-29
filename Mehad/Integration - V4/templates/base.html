@@ -42,6 +42,7 @@
                             {% if 'customer' in session %}
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.customer_dashboard') }}">Customer Dashboard</a></li>
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.editcustomerdetails') }}">Edit Customer Details</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.past_orders') }}">Customer Orders History</a></li>
                             {% endif %}
 
                             <!-- {% elif session['role'] == 'restaurant' %}
@@ -51,7 +52,7 @@
                             {% if 'restaurant' in session %}
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('restaurant.restaurant_dashboard') }}">Restaurant Dashboard</a></li>
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('restaurant.restaurant_additems') }}">Restaurant Add Items</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ url_for('restaurant.received_orders') }}">Restaurant Orders history</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ url_for('restaurant.received_orders') }}">Restaurant Orders History</a></li>
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('restaurant.edit_restaurant') }}">Edit Restaurant Details</a></li>
                             {% endif %}
                             
