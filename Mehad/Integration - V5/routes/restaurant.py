@@ -243,19 +243,32 @@ def received_orders():
         SELECT o.OrderID, c.FirstName || ' ' || c.LastName AS CustomerName, c.Address, o.CreatedAt, o.Notes, o.TotalPrice, o.Status
         FROM Orders o
         JOIN customers c ON o.CustomerID = c.CustomerID
-        WHERE o.RestaurantID = ? AND o.Status IN (?, ?)
+        WHERE o.RestaurantID = ? AND o.Status = ?
         ORDER BY o.OrderID DESC
-    ''', (session['restaurant']['RestaurantID'], 'Completed', 'Rejected',))
-    previousorders = cursor.fetchall()
+    ''', (session['restaurant']['RestaurantID'], 'Completed',))
+    completedorders = cursor.fetchall()
+    
+    cursor.execute('''
+        SELECT o.OrderID, c.FirstName || ' ' || c.LastName AS CustomerName, c.Address, o.CreatedAt, o.Notes, o.TotalPrice, o.Status
+        FROM Orders o
+        JOIN customers c ON o.CustomerID = c.CustomerID
+        WHERE o.RestaurantID = ? AND o.Status = ?
+        ORDER BY o.OrderID DESC
+    ''', (session['restaurant']['RestaurantID'], 'Rejected',))
+    rejectedorders = cursor.fetchall()
 
-    # Convert sqlite3.Row objects to dictionaries
+   # Convert sqlite3.Row objects to dictionaries
     currentorders = [dict(order) for order in currentorders]
     for order in currentorders:
         order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
-    previousorders = [dict(order) for order in previousorders]
-    for order in previousorders:
+
+    completedorders = [dict(order) for order in completedorders]
+    for order in completedorders:
         order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
 
+    rejectedorders = [dict(order) for order in rejectedorders]
+    for order in rejectedorders:
+        order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
 
     # Fetch items for each order
     for order in currentorders:
@@ -267,7 +280,7 @@ def received_orders():
         ''', (order['OrderID'],))
         order['Items'] = cursor.fetchall()
 
-    for order2 in previousorders:
+    for order2 in completedorders:
         cursor.execute('''
             SELECT i.Name, oi.Quantity
             FROM OrderItems oi
@@ -276,8 +289,17 @@ def received_orders():
         ''', (order2['OrderID'],))
         order2['Items'] = cursor.fetchall()
 
+    for order3 in rejectedorders:
+        cursor.execute('''
+            SELECT i.Name, oi.Quantity
+            FROM OrderItems oi
+            JOIN items i ON oi.ItemID = i.ItemID
+            WHERE oi.OrderID = ?
+        ''', (order3['OrderID'],))
+        order3['Items'] = cursor.fetchall()
+
     conn.close()
-    return render_template('received_orders.html', previousorders=previousorders, currentorders=currentorders)
+    return render_template('received_orders.html', completedorders=completedorders, currentorders=currentorders, rejectedorders=rejectedorders)
 
 @restaurant_bp.route('/restaurant/update_order_status/<int:order_id>', methods=['POST'])
 def update_order_status(order_id):
