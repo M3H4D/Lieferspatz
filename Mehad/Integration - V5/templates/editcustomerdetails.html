@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<p>Your current profile details:</p>
+<ul>
+    <li>First Name: {{ user['FirstName'] }}</li>
+    <li>Last Name: {{ user['LastName'] }}</li>
+    <li>Address: {{ user['Address'] }}</li>
+    <li>ZipCode: {{ user['ZipCode'] }}</li>
+    <li>Phone Number: {{ user['PhoneNumber'] }}</li>
+    <li>Balance: € {{ user['Balance'] }}</li>
+    <li>Zip Code: {{ user['ZipCode'] }}</li>
+    <li>Role: {{ user['Role'] }}</li>
+</ul>
+
+<p>Please Choose Which Data To Edit And Type Its New Data (Unchanged Remians The Same.):</p>
+<form method="POST">
+    <input type="text" name="first_name" value="{{ user['FirstName'] }}" placeholder="{{ user['FirstName'] }}" class="form-control mb-2" required>
+    <input type="text" name="last_name" value="{{ user['LastName'] }}" placeholder="{{ user['LastName'] }}" class="form-control mb-2" required>
+    <input type="text" name="address" value="{{ user['Address'] }}" placeholder="{{ user['Address'] }}" class="form-control mb-2" required>
+    <input type="text" name="zip_code" value="{{ user['ZipCode'] }}" placeholder="{{ user['ZipCode'] }}" class="form-control mb-2" required>
+    <button type="submit" class="btn btn-warning">Save Data</button>
+    <a href="{{ url_for('customer.customer_dashboard') }}" class="btn btn-danger">Cancel</a>
+</form>
+{% endblock %}

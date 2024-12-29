@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container text-center">
+        <h1>Welcome to Lieferspatz</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{{ url_for('customer.register_customer') }}" class="btn btn-primary btn-lg w-100 mb-3">Register as Customer</a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ url_for('restaurant.register_restaurant') }}" class="btn btn-secondary btn-lg w-100 mb-3">Register as Restaurant</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
