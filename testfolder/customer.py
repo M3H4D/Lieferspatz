@@ -238,7 +238,8 @@ def editcustomerdetails():
         cursor.execute('SELECT * FROM customers WHERE CustomerID = ?', (user_id,))
         session['customer'] = dict(cursor.fetchone())
         conn.close()
-
+        
+        flash('Customer Details updated successfully!', 'success')
         return redirect(url_for('customer.customer_dashboard'))
     return render_template('editcustomerdetails.html', user=session['customer'])
 
@@ -257,7 +258,7 @@ def handle_payment(action):
     cursor.execute('SELECT Balance FROM customers WHERE CustomerID = ?', (customer_data['CustomerID'],))
     balance = cursor.fetchone()
     if balance[0] < session['total_price']:
-        flash("Insufficient Balance Amount, Transaction Cancelled.", 'danger')
+        flash("Insufficient Balance Amount.", 'danger')
         session.pop('shoppingcart')
         session['total_price'] = 0
         session['total_quantity'] = 0
@@ -319,8 +320,7 @@ def handle_payment(action):
         session['total_price'] = 0
         session['total_quantity'] = 0
         return redirect(url_for('customer.customer_dashboard'))
-
-
+    
 @customer_bp.route('/customer/past_orders')
 def past_orders():
     if 'customer' not in session:
