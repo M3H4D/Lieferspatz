@@ -44,7 +44,39 @@
             </tr>
         </thead>
         <tbody>
-            {% for order in orders %}
+            {% for order in currentorders %}
+            <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% endif %}">
+                <td>{{ order['OrderID'] }}</td>
+                <td>{{ order['CustomerName'] }}</td>
+                <td>{{ order['Address'] }}</td>
+                <td>{{ order['CreatedAt'].strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ order['Notes'] }}</td>
+                <td>
+                    <ul>
+                        {% for item in order['Items'] %}
+                        <li>{{ item['Name'] }} (x{{ item['Quantity'] }})</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td class="{% if order['Status'] == 'Rejected' %}total-price-rejected{% else %}total-price{% endif %}">
+                    {% if order['Status'] == 'Rejected' %}
+                        € {{ (0.85 * order['TotalPrice']) | round(2) }} (€{{ order['TotalPrice'] | round(2) }})
+                    {% else %}
+                        + € {{ (0.85 * order['TotalPrice']) | round(2) }} (€{{ order['TotalPrice'] | round(2) }})
+                    {% endif %}
+                </td>                
+                <td>{{ order['Status'] }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
+                        <button type="submit" name="status" value="InProcess" class="btn btn-warning {% if order['Status'] == 'InProcess' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Process</button>
+                        <button type="submit" name="status" value="InDelivery" class="btn btn-info {% if order['Status'] == 'InDelivery' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Delivery</button>
+                        <button type="submit" name="status" value="Completed" class="btn btn-success {% if order['Status'] == 'Completed' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Completed</button>
+                        <button type="submit" name="status" value="Rejected" class="btn btn-danger {% if order['Status'] == 'Rejected' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% for order in previousorders %}
             <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% endif %}">
                 <td>{{ order['OrderID'] }}</td>
                 <td>{{ order['CustomerName'] }}</td>
