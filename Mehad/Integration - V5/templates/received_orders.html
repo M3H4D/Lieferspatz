@@ -13,6 +13,10 @@
             background-color: #f0f0f0;
             color: #a0a0a0;
         }
+        .completed-row {
+            background-color: #d4edda; /* Green greyed-out background */
+            color: #155724;
+        }
         .total-price {
             color: green;
             font-weight: bold;
@@ -77,7 +81,7 @@
             </tr>
             {% endfor %}
             {% for order in completedorders %}
-            <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% endif %}">
+            <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% elif order['Status'] == 'Completed' %}completed-row{% endif %}">
                 <td>{{ order['OrderID'] }}</td>
                 <td>{{ order['CustomerName'] }}</td>
                 <td>{{ order['Address'] }}</td>
