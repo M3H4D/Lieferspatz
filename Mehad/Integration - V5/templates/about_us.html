@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>About Us</title>
+    <style>
+        .developer-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .developer-card img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .developer-card h3 {
+            margin-top: 10px;
+        }
+        .developer-card p {
+            margin-top: 5px;
+            color: #666;
+        }
+        .contact-options {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            transition: bottom 0.3s ease-in-out;
+        }
+        .developer-card:hover .contact-options {
+            bottom: 0;
+        }
+        .contact-link {
+            display: block;
+            margin-top: 10px;
+            color: white;
+            text-decoration: none;
+        }
+        .contact-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-4">About Us</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="developer-card">
+                    <img src="{{ url_for('static', filename='images/frontend_image.jpg') }}" alt="Developer 1">
+                    <h3>Mehad Shakir</h3>
+                    <p>Fullstack Developer</p>
+                    <div class="contact-options">
+                        <a href="mailto:mehad.shakir@example.com" class="contact-link">Email Me</a>
+                        <a href="https://linkedin.com/in/mehadshakir" class="contact-link" target="_blank">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="developer-card">
+                    <img src="{{ url_for('static', filename='images/backend_image.png') }}" alt="Developer 2">
+                    <h3>Omar Darwish</h3>
+                    <p>Backend Developer</p>
+                    <div class="contact-options">
+                        <a href="mailto:omar.darwish@example.com" class="contact-link">Email Me</a>
+                        <a href="https://www.linkedin.com/in/" class="contact-link" target="_blank">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="developer-card">
+                    <img src="{{ url_for('static', filename='images/frontend_image.jpg') }}" alt="Developer 3">
+                    <h3>Ridhi Sharma</h3>
+                    <p>Frontend Developer</p>
+                    <div class="contact-options">
+                        <a href="mailto:ridhi.sharma@example.com" class="contact-link">Email Me</a>
+                        <a href="https://linkedin.com/in/ridhi-sharma-155430187" class="contact-link" target="_blank">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="developer-card">
+                    <img src="{{ url_for('static', filename='images/backend_image.png') }}" alt="Developer 3">
+                    <h3>Jayesh Anand</h3>
+                    <p>Backend Developer</p>
+                    <div class="contact-options">
+                        <a href="mailto:jayesh.anand@example.com" class="contact-link">Email Me</a>
+                        <a href="https://linkedin.com/in/jayesh-anand-6422bb25b" class="contact-link" target="_blank">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
