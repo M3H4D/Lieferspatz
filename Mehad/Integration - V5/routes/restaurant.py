@@ -299,7 +299,9 @@ def received_orders():
         order3['Items'] = cursor.fetchall()
 
     conn.close()
-    return render_template('received_orders.html', completedorders=completedorders, currentorders=currentorders, rejectedorders=rejectedorders)
+
+    restaurant_data = session['restaurant']
+    return render_template('received_orders.html', completedorders=completedorders, currentorders=currentorders, rejectedorders=rejectedorders, user=restaurant_data)
 
 @restaurant_bp.route('/restaurant/update_order_status/<int:order_id>', methods=['POST'])
 def update_order_status(order_id):
