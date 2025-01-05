@@ -382,8 +382,8 @@ def edit_restaurant():
     cursor.execute('SELECT ZipCode FROM delivery_zip_codes WHERE RestaurantID = ?', (restaurant_data['RestaurantID'],))
     delivery_zip_codes = [row['ZipCode'] for row in cursor.fetchall()]
     conn.close()
-
-    return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+    restaurant_data = session['restaurant']
+    return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes, user=restaurant_data )
 
 @restaurant_bp.route('/delete_item', methods=['POST'])
 def restaurant_delete_item():
