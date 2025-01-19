@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lieferspatz</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom style for the Login link */
+        .nav-link.login {
+            color: green !important;
+            font-weight: bold;
+            font-size: 1.25rem; /* Make the links bigger */
+            margin-left: 700px; /* Move login to the right */
+        }
+        .nav-link.customer, .nav-link.restaurant {
+            color: green !important;
+            font-weight: bold;
+            font-size: 1.25rem; /* Make the links bigger */
+        }
+        /* Additional underline when links are active */
+        .nav-link.login.active, .nav-link.customer.active, .nav-link.restaurant.active {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-dismissible fade show" role="alert">
+                    <ul>
+                        {% for category, message in messages %}
+                            <li class="alert alert-{{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="d-flex align-items-center">
+                    <img src="/static/images/logo.jpg" alt="Logo" style="height: 40px; margin-right: 10px;">
+                    <a class="navbar-brand" href="{{ url_for('home.home') }}" style="color: darkgreen; font-weight: bold; font-size: 48px;">Lieferspatz</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav">
+                        {% if 'user_id' in session %}
+                            <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'auth.logout' %}active{% endif %}" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                            {% if 'customer' in session %}
+                                <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.customer_dashboard' %}active{% endif %}" href="{{ url_for('customer.customer_dashboard') }}">Customer Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.editcustomerdetails' %}active{% endif %}" href="{{ url_for('customer.editcustomerdetails') }}">Edit Customer Details</a></li>
+                                <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.past_orders' %}active{% endif %}" href="{{ url_for('customer.past_orders') }}">Customer Orders History</a></li>
+                            {% endif %}
+                            {% if 'restaurant' in session %}
+                                <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.restaurant_dashboard' %}active{% endif %}" href="{{ url_for('restaurant.restaurant_dashboard') }}">Restaurant Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.restaurant_additems' %}active{% endif %}" href="{{ url_for('restaurant.restaurant_additems') }}">Restaurant Add Items</a></li>
+                                <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.received_orders' %}active{% endif %}" href="{{ url_for('restaurant.received_orders') }}">Restaurant Orders History</a></li>
+                                <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.edit_restaurant' %}active{% endif %}" href="{{ url_for('restaurant.edit_restaurant') }}">Edit Restaurant Details</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link login {% if request.endpoint == 'auth.login' %}active{% endif %}" href="{{ url_for('auth.login') }}">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            {% block head %}
+            {% endblock%}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer class="mt-5" id="footer">
+            <div class="text-center">
+                <p>&copy; 2025 Lieferspatz. All rights reserved.</p>
+                <p><a href="{{ url_for('home.about_us') }}">About Us</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS (Optional for certain Bootstrap components like modals, dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
