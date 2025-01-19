@@ -4,23 +4,21 @@
     <title>Past Orders</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Page Styling */
+        /* General Styling */
         body {
             background-color: #f9f9f9;
         }
 
-        /* Header Styling */
         h1 {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 2.5rem;
-            color: #333;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 20px;
         }
 
-        /* Table Styling */
         .table {
             margin: 20px auto;
-            max-width: 90%;
+            max-width: 95%;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -32,47 +30,34 @@
             text-align: center;
         }
 
-        .table th, .table td {
-            vertical-align: middle;
-            padding: 15px;
-            font-size: 1rem;
-        }
-
         .table td ul {
             padding-left: 15px;
         }
 
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #f8f9fa;
-        }
-
-        /* Status Column Styling */
-        .status-badge {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-align: center;
-            color: #fff;
-        }
-
-        .status-badge.Rejected {
-            background-color: #dc3545;
-        }
-
-        .status-badge.Completed {
-            background-color: #28a745;
-        }
-
-        .status-badge.Pending {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        /* Rejected/Completed Row Styling */
         .rejected-row {
-            opacity: 0.6;
+            background-color: #f0f0f0;
+            color: #a0a0a0;
+        }
+
+        .completed-row {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .total-price {
+            color: green;
+            font-weight: bold;
+        }
+
+        .total-price-rejected {
+            color: #a0a0a0;
+            font-weight: normal;
+        }
+
+        .btn.active {
+            border: 2px solid red !important;
+            box-shadow: 0 0 10px red !important;
+            transform: scale(1.1);
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -82,7 +67,7 @@
 
 {% block content %}
     <h1>Past Orders</h1>
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Restaurant Name</th>
@@ -92,11 +77,12 @@
                 <th>Items</th>
                 <th>Total Price</th>
                 <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for order in currentorders %}
-            <tr class="{% if order['Status'] == 'Rejected' or order['Status'] == 'Completed' %}rejected-row{% endif %}">
+            <tr class="{% if order['Status'] == 'Rejected' %}rejected-row{% elif order['Status'] == 'Completed' %}completed-row{% endif %}">
                 <td>{{ order['Name'] }}</td>
                 <td>{{ order['Address'] }}</td>
                 <td>{{ order['CreatedAt'].strftime('%Y-%m-%d %H:%M') }}</td>
@@ -108,25 +94,18 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td>€ {{ order['TotalPrice'] }}</td>
-                <td><span class="status-badge {{ order['Status'] }}">{{ order['Status'] }}</span></td>
-            </tr>
-            {% endfor %}
-            {% for order in previousorders %}
-            <tr class="{% if order['Status'] == 'Rejected' or order['Status'] == 'Completed' %}rejected-row{% endif %}">
-                <td>{{ order['Name'] }}</td>
-                <td>{{ order['Address'] }}</td>
-                <td>{{ order['CreatedAt'].strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>{{ order['Notes'] }}</td>
-                <td>
-                    <ul>
-                        {% for item in order['Items'] %}
-                        <li>{{ item['Name'] }} (x{{ item['Quantity'] }})</li>
-                        {% endfor %}
-                    </ul>
+                <td class="{% if order['Status'] == 'Rejected' %}total-price-rejected{% else %}total-price{% endif %}">
+                    € {{ order['TotalPrice'] }}
                 </td>
-                <td>€ {{ order['TotalPrice'] }}</td>
-                <td><span class="status-badge {{ order['Status'] }}">{{ order['Status'] }}</span></td>
+                <td>{{ order['Status'] }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('restaurant.update_order_status', order_id=order['OrderID']) }}">
+                        <button type="submit" name="status" value="InProcess" class="btn btn-warning {% if order['Status'] == 'InProcess' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Process</button>
+                        <button type="submit" name="status" value="InDelivery" class="btn btn-info {% if order['Status'] == 'InDelivery' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>In Delivery</button>
+                        <button type="submit" name="status" value="Completed" class="btn btn-success {% if order['Status'] == 'Completed' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Completed</button>
+                        <button type="submit" name="status" value="Rejected" class="btn btn-danger {% if order['Status'] == 'Rejected' %}active{% endif %}" {% if order['Status'] == 'Rejected' %}disabled{% endif %}>Reject</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
