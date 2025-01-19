@@ -338,7 +338,7 @@ def edit_restaurant():
         # Validate ZIP code
         if not zip_code.isdigit():
             flash('Please provide a valid ZIP Code', 'danger')
-            return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes)
+            return render_template('edit_restaurant.html', restaurant=restaurant_data, delivery_zip_codes=delivery_zip_codes, user=restaurant_data)
 
         # Validate delivery ZIP codes
         for delivery_zip_code in delivery_zip_codes:
