@@ -73,6 +73,53 @@
         font-weight: bold;
         color: #495057;
     }
+    .btn {
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 5px;
+        }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+    .modal-header {
+        background-color: #3498db;
+        color: white;
+        border-bottom: none;
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #7f8c8d;
+        border: none;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: #636e72;
+    }
+
+    .modal-footer .btn-primary {
+        background-color: #2ecc71;
+        border: none;
+    }
+
+    .modal-footer .btn-primary:hover {
+        background-color: #27ae60;
+    }
 </style>
 {% endblock %}
 
@@ -172,5 +219,58 @@
     function removeZipCode(button) {
         button.closest('.zip-code-field').remove();
     }
+</script>
+
+<!-- Modal for payment confirmation -->
+<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Payment Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="paymentMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="declineButton">Decline</button>
+                <button type="button" class="btn btn-primary" id="acceptButton">Accept</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add WebSocket handling for payment notifications -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+    const socket = io();
+
+    // Join restaurant-specific room
+    socket.emit('join_room', { room: 'restaurant_{{ user["RestaurantID"] }}' });
+
+    // Handle incoming payment notifications
+    socket.on('payment_received', function (data) {
+        const customerId = data.customer_id;
+        const customerName = data.customer_name;
+        const message = data.message;
+        document.getElementById('paymentMessage').innerText = `Payment received from ${customerName}: ${message}.`;
+
+        // Show the modal
+        $('#paymentModal').modal('show');
+
+        // Handle accept button click
+        document.getElementById('acceptButton').onclick = function () {
+            socket.emit('restaurant_reply', { customer_id: customerId, message: 'Payment accepted' });
+            $('#paymentModal').modal('hide');
+        };
+
+        // Handle decline button click
+        document.getElementById('declineButton').onclick = function () {
+            socket.emit('restaurant_reply', { customer_id: customerId, message: 'Payment declined' });
+            $('#paymentModal').modal('hide');
+        };
+    });
 </script>
 {% endblock %}
