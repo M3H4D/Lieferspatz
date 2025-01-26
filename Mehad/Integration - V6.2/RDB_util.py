@@ -52,7 +52,8 @@ def get_item_from_database(ItemID):
 def delete_item_from_database(ItemID):
     conn = connect_to_database()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM Items WHERE ItemID = ?", ItemID)
+    print("BROTHER WHY U NOT OWKIRNG ", ItemID)
+    cursor.execute("DELETE FROM Items WHERE ItemID = ?", (ItemID,))
     conn.commit()
     conn.close()
 
