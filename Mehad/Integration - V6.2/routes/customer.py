@@ -354,5 +354,24 @@ def past_orders():
     for order in previousorders:
         order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
     
+    # Fetch items for each order to display it in the Items Column
+    for order in currentorders:
+        cursor.execute('''
+            SELECT i.Name, oi.Quantity
+            FROM OrderItems oi
+            JOIN items i ON oi.ItemID = i.ItemID
+            WHERE oi.OrderID = ?
+        ''', (order['OrderID'],))
+        order['Items'] = cursor.fetchall()
+
+    for order2 in previousorders:
+        cursor.execute('''
+            SELECT i.Name, oi.Quantity
+            FROM OrderItems oi
+            JOIN items i ON oi.ItemID = i.ItemID
+            WHERE oi.OrderID = ?
+        ''', (order2['OrderID'],))
+        order2['Items'] = cursor.fetchall()
+    
     conn.close()
     return render_template('past_orders.html', currentorders=currentorders, previousorders=previousorders)
