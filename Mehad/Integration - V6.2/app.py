@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_socketio import SocketIO
+
 from config import Config
 from db import create_tables
 from routes.home import home_bp

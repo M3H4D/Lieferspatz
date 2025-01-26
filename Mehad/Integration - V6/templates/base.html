@@ -43,25 +43,28 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <div class="d-flex align-items-center">
                     <img src="/static/images/logo.jpg" alt="Logo" style="height: 40px; margin-right: 10px;">
-                    <a class="navbar-brand" href="{{ url_for('home.home') }}" style="color: darkgreen; font-weight: bold; font-size: 48px;">Lieferspatz</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav">
                         {% if 'user_id' in session %}
-                            <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'auth.logout' %}active{% endif %}" href="{{ url_for('auth.logout') }}">Logout</a></li>
                             {% if 'customer' in session %}
+                                <a class="navbar-brand" href="{{ url_for('customer.customer_dashboard') }}" style="color: darkgreen; font-weight: bold; font-size: 48px;">Lieferspatz</a>
                                 <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.customer_dashboard' %}active{% endif %}" href="{{ url_for('customer.customer_dashboard') }}">Customer Dashboard</a></li>
                                 <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.editcustomerdetails' %}active{% endif %}" href="{{ url_for('customer.editcustomerdetails') }}">Edit Customer Details</a></li>
                                 <li class="nav-item"><a class="nav-link customer {% if request.endpoint == 'customer.past_orders' %}active{% endif %}" href="{{ url_for('customer.past_orders') }}">Customer Orders History</a></li>
                             {% endif %}
                             {% if 'restaurant' in session %}
+                                <a class="navbar-brand" href="{{ url_for('restaurant.restaurant_dashboard') }}" style="color: darkgreen; font-weight: bold; font-size: 48px;">Lieferspatz</a> 
                                 <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.restaurant_dashboard' %}active{% endif %}" href="{{ url_for('restaurant.restaurant_dashboard') }}">Restaurant Dashboard</a></li>
                                 <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.restaurant_additems' %}active{% endif %}" href="{{ url_for('restaurant.restaurant_additems') }}">Restaurant Add Items</a></li>
                                 <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.received_orders' %}active{% endif %}" href="{{ url_for('restaurant.received_orders') }}">Restaurant Orders History</a></li>
                                 <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'restaurant.edit_restaurant' %}active{% endif %}" href="{{ url_for('restaurant.edit_restaurant') }}">Edit Restaurant Details</a></li>
                             {% endif %}
+                            <li class="nav-item"><a class="nav-link restaurant {% if request.endpoint == 'auth.logout' %}active{% endif %}" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                            
                         {% else %}
                             <li class="nav-item">
+                                <a class="navbar-brand" href="{{ url_for('home.home') }}" style="color: darkgreen; font-weight: bold; font-size: 48px;">Lieferspatz</a> 
                                 <a class="nav-link login {% if request.endpoint == 'auth.login' %}active{% endif %}" href="{{ url_for('auth.login') }}">Login</a>
                             </li>
                         {% endif %}
