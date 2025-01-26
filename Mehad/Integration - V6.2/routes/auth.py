@@ -22,15 +22,6 @@ def login():
         user = cursor.fetchone()
         conn.close()
 
-        # if user and check_password_hash(user['Password'], password):
-        #     session['user_id'] = user['CustomerID'] if role == 'customer' else user['RestaurantID']
-        #     session['role'] = role
-        #     session['user'] = dict(user)
-        #     flash('Login successful!', 'success')
-        #     return redirect(url_for(f'{role}.{role}_dashboard'))
-        # else:
-        #     flash('Invalid credentials', 'danger')
-
         if user and check_password_hash(user['Password'], password):
             user_data = dict(user)
             
@@ -47,9 +38,6 @@ def login():
             return redirect(url_for(f'{role}.{role}_dashboard'))
         else:
             flash('Invalid credentials', 'danger')
-
-
-        
 
     return render_template('login.html')
 
