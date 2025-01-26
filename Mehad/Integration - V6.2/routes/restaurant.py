@@ -127,7 +127,6 @@ def restaurant_dashboard():
     restaurant_data = session['restaurant']
     return render_template('dashboard_restaurant.html', user=restaurant_data, items = items, delivery_zip_codes=delivery_zip_codes, status=status)
 
-
 @restaurant_bp.route('/restaurant/additems', methods=['GET', 'POST'])
 def restaurant_additems():
     if request.method == 'POST':
@@ -163,11 +162,6 @@ def restaurant_additems():
 
     restaurant_data = session['restaurant']
     return render_template('add_item.html', user=restaurant_data)
-
-# @restaurant_bp.route('/delete_item', methods=['GET', 'POST'])
-# def restaurant_delete_item():
-#     RDB_util.delete_item_from_database(request.form['ItemID'])
-#     return redirect(url_for('restaurant.restaurant_dashboard'))
 
 @restaurant_bp.route('/edit_item_screen', methods=['GET', 'POST'])
 def restaurant_edit_item_screen():
@@ -220,8 +214,6 @@ def restaurant_edit_item():
         flash('Item Edited!', 'success')
 
     return redirect(url_for('restaurant.restaurant_dashboard'))
-
-
 
 @restaurant_bp.route('/restaurant/received_orders')
 def received_orders():
