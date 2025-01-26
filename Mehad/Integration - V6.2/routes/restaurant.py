@@ -270,34 +270,6 @@ def received_orders():
     for order in rejectedorders:
         order['CreatedAt'] = datetime.strptime(order['CreatedAt'], '%Y-%m-%d %H:%M:%S.%f')
 
-    # Fetch items for each order
-    for order in currentorders:
-        cursor.execute('''
-            SELECT i.Name, oi.Quantity
-            FROM OrderItems oi
-            JOIN items i ON oi.ItemID = i.ItemID
-            WHERE oi.OrderID = ?
-        ''', (order['OrderID'],))
-        order['Items'] = cursor.fetchall()
-
-    for order2 in completedorders:
-        cursor.execute('''
-            SELECT i.Name, oi.Quantity
-            FROM OrderItems oi
-            JOIN items i ON oi.ItemID = i.ItemID
-            WHERE oi.OrderID = ?
-        ''', (order2['OrderID'],))
-        order2['Items'] = cursor.fetchall()
-
-    for order3 in rejectedorders:
-        cursor.execute('''
-            SELECT i.Name, oi.Quantity
-            FROM OrderItems oi
-            JOIN items i ON oi.ItemID = i.ItemID
-            WHERE oi.OrderID = ?
-        ''', (order3['OrderID'],))
-        order3['Items'] = cursor.fetchall()
-
     conn.close()
 
     restaurant_data = session['restaurant']
@@ -394,6 +366,7 @@ def edit_restaurant():
 @restaurant_bp.route('/delete_item', methods=['POST'])
 def restaurant_delete_item():
     item_id = request.form['ItemID']
+    print(item_id)
     RDB_util.delete_item_from_database(item_id)
     flash('Item Deleted!', 'success')
     return redirect(url_for('restaurant.restaurant_dashboard'))
