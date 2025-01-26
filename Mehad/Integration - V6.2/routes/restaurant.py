@@ -366,7 +366,6 @@ def edit_restaurant():
 @restaurant_bp.route('/delete_item', methods=['POST'])
 def restaurant_delete_item():
     item_id = request.form['ItemID']
-    print(item_id)
     RDB_util.delete_item_from_database(item_id)
     flash('Item Deleted!', 'success')
     return redirect(url_for('restaurant.restaurant_dashboard'))
