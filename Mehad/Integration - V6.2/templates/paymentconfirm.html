@@ -29,7 +29,7 @@
                 <div>
                     <h5 style="font-weight: 700; margin-bottom: 10px; color: #34495e;">Items</h5>
                     {% for key, val in session['shoppingcart'].items() %}
-                    <p style="margin: 5px 0; color: #7f8c8d;">{{ session['shoppingcart'][key]['Name'] }}</p>
+                    <p style="margin: 5px 0; color: #7f8c8d;">{{ session['shoppingcart'][key]['Name'] }} (x{{ session['shoppingcart'][key]['Quantity'] }})</p>
                     {% endfor %}
                     <h6 style="font-weight: 700; margin-top: 15px; color: #2c3e50;">Total: {{ session['total_price'] | round(2) }} €</h6>
                 </div>
@@ -42,7 +42,7 @@
             <div>
                 <p style="font-weight: bold; margin-bottom: 10px; color: #34495e;">{{ restaurantchosen['Name'] }}</p>
                 {% for key, val in session['shoppingcart'].items() %}
-                <p style="margin: 5px 0; color: #7f8c8d;">{{ session['shoppingcart'][key]['Name'] }}</p>
+                <p style="margin: 5px 0; color: #7f8c8d;">{{ session['shoppingcart'][key]['Name'] }} (x{{ session['shoppingcart'][key]['Quantity'] }})</p>
                 {% endfor %}
             </div>
             <h5 style="font-weight: 700; margin-top: 20px; color: #2c3e50;">Total: <span style="float: right;">{{ session['total_price'] | round(2) }} €</span></h5>
