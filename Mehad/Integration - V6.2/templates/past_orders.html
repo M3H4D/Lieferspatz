@@ -109,7 +109,7 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td>€ {{ order['TotalPrice'] }}</td>
+                <td>€ {{ order['TotalPrice'] | round(2) }}</td>
                 <td><span class="status-badge {{ order['Status'] }}">{{ order['Status'] }}</span></td>
             </tr>
             {% endfor %}
@@ -126,7 +126,7 @@
                         {% endfor %}
                     </ul>
                 </td>
-                <td>€ {{ order['TotalPrice'] }}</td>
+                <td>€ {{ order['TotalPrice'] | round(2) }}</td>
                 <td><span class="status-badge {{ order['Status'] }}">{{ order['Status'] }}</span></td>
             </tr>
             {% endfor %}
