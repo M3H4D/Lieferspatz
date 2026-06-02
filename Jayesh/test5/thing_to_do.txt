@@ -1,8 +1,0 @@
-1. image upload in register_dashboard.html - DONE!
-2. A user friendly message if the username in case of restaurant registration is the same - DONE!
-3. Once we login and go to home page there is no options to go back to dashboard. So as long as we are logged in we have: Logout and Dashboard links - DONE!
-4. ZIP codes in a new table "delivery_zip_codes"- efficient + Standard SQL queries - DONE!
-    or ZIP codes as a comma seperated value - inefficient + strange SQL queries - NO, IT WILL COMPLICATE THINGS!
-
-5. Can i break app.py into multiple .py files?
-5. Multiple logins at the same time - MAYBE IT IS WORKING?
